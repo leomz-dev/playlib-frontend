@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Star, Clock, Calendar, Gamepad2, Play, Trash2 } from 'lucide-react';
+import { Star, Clock, Calendar, Play, Trash2 } from 'lucide-react';
+import { Icon } from '@iconify/react';
 import { Game } from '../services/gameService';
 import { rateGame } from '../services/gameService';
 
@@ -53,6 +54,48 @@ export default function GameCard({
     return isNaN(num) ? '0' : num.toFixed(decimals);
   };
 
+  // Función para obtener el estilo y el ícono según la plataforma
+  const getPlatformStyles = (platform: string) => {
+    const platformLower = platform.toLowerCase();
+    
+    if (platformLower.includes('playstation')) {
+      return {
+        bgColor: 'bg-orange-500',
+        textColor: 'text-white',
+        icon: <Icon icon="tabler:device-gamepad-2" width="16" height="16" className="text-white" />
+      };
+    }
+    if (platformLower.includes('xbox')) {
+      return {
+        bgColor: 'bg-green-600',
+        textColor: 'text-white',
+        icon: <Icon icon="tabler:brand-xbox" width="16" height="16" className="text-white" />
+      };
+    }
+    if (platformLower.includes('nintendo') || platformLower.includes('switch')) {
+      return {
+        bgColor: 'bg-red-500',
+        textColor: 'text-white',
+        icon: <Icon icon="tabler:device-nintendo" width="16" height="16" className="text-white" />
+      };
+    }
+    if (platformLower.includes('mobile') || platformLower.includes('android') || platformLower.includes('ios')) {
+      return {
+        bgColor: 'bg-green-500',
+        textColor: 'text-white',
+        icon: <Icon icon="tabler:device-mobile" width="16" height="16" className="text-white" />
+      };
+    }
+    // Por defecto (PC/Windows/Linux)
+    return {
+      bgColor: 'bg-blue-500',
+      textColor: 'text-white',
+      icon: <Icon icon="tabler:devices-pc" width="16" height="16" className="text-white" />
+    };
+  };
+  
+  const platformStyles = getPlatformStyles(plataforma);
+  
   // Valores formateados seguros
   const formattedCalificacion = formatNumber(averageRating);
   const formattedHorasJugadas = formatNumber(horasJugadas, 0);
@@ -85,116 +128,87 @@ export default function GameCard({
     }
   };
 
-  const renderStars = () => {
-    const stars = [];
-    const rating = hoverRating || averageRating || 0;
-    
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <button
-          key={i}
-          type="button"
-          className={`text-${i <= rating ? 'yellow-400' : 'gray-400'} text-xl`}
-          onClick={() => handleRating(i)}
-          onMouseEnter={() => setHoverRating(i)}
-          onMouseLeave={() => setHoverRating(0)}
-        >
-          {i <= rating ? '★' : '☆'}
-        </button>
-      );
-    }
-    return stars;
-  };
-
-  const getPlatformIcon = (platform: string) => {
-    return <Gamepad2 className="w-4 h-4" />;
-  };
-
   return (
     <div 
-      className={`relative bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 transform ${isHovered ? 'scale-105 shadow-xl' : 'scale-100'}`}
+      className={`relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 transform ${isHovered ? 'scale-105 -translate-y-1' : 'scale-100'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Game Image */}
-      <div className="relative h-48 bg-gray-700 overflow-hidden">
+      {/* Game Image with Gradient Overlay */}
+      <div className="relative h-48 bg-gray-800 overflow-hidden">
         {imagenPortada ? (
-          <Image
-            src={imagenPortada}
-            alt={titulo}
-            fill
-            className="object-cover transition-opacity duration-300"
-            style={{ opacity: isHovered ? 0.8 : 1 }}
-          />
+          <>
+            <Image
+              src={imagenPortada}
+              alt={titulo}
+              fill
+              className="object-cover transition-all duration-500"
+              style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent"></div>
+          </>
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-            <Gamepad2 className="w-16 h-16 text-gray-600" />
+          <div className="w-full h-full bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+            {platformStyles.icon}
           </div>
         )}
         
+        {/* Platform Badge */}
+        <div className="absolute top-3 left-3 z-10">
+          <div className={`flex items-center px-3 py-1 rounded-full ${platformStyles.bgColor} ${platformStyles.textColor} shadow-lg`}>
+            {platformStyles.icon}
+            <span className="ml-1 text-xs font-semibold">{plataforma}</span>
+          </div>
+        </div>
         
-        {/* Play Button on Hover */}
-        {isHovered && (
-          <button className="absolute inset-0 m-auto w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center text-black hover:bg-opacity-100 transition-all duration-300">
-            <Play className="w-8 h-8 ml-1" fill="currentColor" />
-          </button>
-        )}
+        {/* Rating Badge */}
+        <div className="absolute top-3 right-3 z-10 flex items-center bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
+          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+          <span className="ml-1 text-sm font-semibold text-white">{formattedCalificacion}</span>
+        </div>
       </div>
       
       {/* Game Info */}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="font-bold text-lg text-white truncate">{titulo}</h3>
-          <div className="flex items-center bg-black/50 bg-opacity-20 text-yellow-400 px-2 py-1 rounded text-sm">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star 
-                key={star} 
-                className={`w-4 h-4 ${star <= Math.round(averageRating) ? 'fill-yellow-400' : 'fill-gray-500 text-gray-500'}`} 
-              />
-            ))}
-            <span className="ml-1">{formattedCalificacion}</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center text-sm text-gray-400 mb-3">
-          <Gamepad2 className="w-4 h-4 mr-1" />
-          <span className="mr-3">{plataforma}</span>
-          <Calendar className="w-4 h-4 mr-1" />
-          <span>{formattedAñoLanzamiento}</span>
-        </div>
-        
-        {/* Game Stats */}
-        <div className="grid grid-cols-2 gap-2 text-sm text-gray-400 mb-4">
-          <div className="flex items-center">
-            <Clock className="w-4 h-4 mr-1" />
-            <span>{formattedHorasJugadas} horas</span>
-          </div>
-          <div className="flex items-center">
+      <div className="p-5">
+        <div className="mb-3">
+          <h3 className="font-bold text-xl text-white mb-1 line-clamp-1">{titulo}</h3>
+          <div className="flex items-center text-sm text-gray-400">
             <Calendar className="w-4 h-4 mr-1" />
-            <span>Género: {genero}</span>
+            <span>{formattedAñoLanzamiento}</span>
+            <span className="mx-2">•</span>
+            <Clock className="w-4 h-4 mr-1" />
+            <span>{formattedHorasJugadas}h</span>
           </div>
         </div>
         
-        {/* Actions */}
-        <div className="flex justify-between">
+        {/* Genre Tags */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {genero.split(',').map((g, i) => (
+            <span key={i} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded-full">
+              {g.trim()}
+            </span>
+          ))}
+        </div>
+        
+        {/* Action Buttons */}
+        <div className="flex items-center justify-between pt-2 border-t border-gray-800">
           <Link 
             href={`/game/${_id}`}
-            className="px-3 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
+            className="flex-1 mr-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold text-center transition-colors flex items-center justify-center"
           >
-            Ver detalles
+            <Play className="w-4 h-4 mr-2" />
+            Ver más
           </Link>
           
-          <div className="flex space-x-2">
-            {showActions && onDelete && (
-              <button 
-                onClick={handleDelete}
-                className="p-2 text-red-400 hover:text-red-300 transition-colors"
-                title="Eliminar juego"
-              >
-                <Trash2 className="w-5 h-5" />
-              </button>
-            )}
-          </div>
+          {showActions && onDelete && (
+            <button 
+              onClick={handleDelete}
+              className="p-2.5 text-gray-400 hover:text-red-400 transition-colors rounded-lg hover:bg-gray-800"
+              title="Eliminar juego"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          )}
         </div>
         
         {error && (
