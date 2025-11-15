@@ -250,12 +250,12 @@ export default function GameLibrary() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
             {filteredGames.length > 0 ? (
               filteredGames.map((game) => (
-              <GameCard
-                key={game._id}
-                {...game}
-                onDelete={handleDelete}
-onRatingChange={handleRatingChange}
-              />
+                <GameCard
+                  key={game._id}
+                  {...game}
+                  onDelete={handleDelete}
+                  onRatingChange={handleRatingChange}
+                />
               ))
             ) : (
               <div className="col-span-full text-center py-12">
