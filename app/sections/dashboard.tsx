@@ -234,7 +234,7 @@ export default function Dashboard() {
   }
 
   return (
-    <section id="dashboard" className="min-h-screen bg-linear-to-br from-gray-900 to-gray-800 text-white p-4 md:p-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-900 to-gray-800 text-white p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h2 className="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-linear-to-r from-green-100 to-blue-500">
@@ -338,7 +338,7 @@ export default function Dashboard() {
         </div>
 
       </div>
-    </section>
+    </div>
   );
 }
 

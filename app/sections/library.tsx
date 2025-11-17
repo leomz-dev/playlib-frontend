@@ -120,7 +120,7 @@ export default function GameLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-8">
+    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-8 scroll-mt-16">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <h1 className="text-3xl md:text-4xl font-bold">Mi Biblioteca de Juegos</h1>

@@ -4,7 +4,7 @@ import Waves from '../components/Waves';
 
 export default function Hero() {
   return (
-    <section id="hero" className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-900">
+    <div className="relative h-screen flex items-center justify-center overflow-hidden bg-gray-900">
       <Waves
         lineColor="rgba(255, 0, 0, 0.2)"
         backgroundColor="rgba(0, 0, 0, 0.8)"
@@ -22,6 +22,6 @@ export default function Hero() {
         <h1 className="text-5xl md:text-6xl font-bold mb-6 text-white">Bienvenido a tu Biblioteca de Juegos</h1>
         <p className="text-xl md:text-2xl text-gray-300">Organiza, gestiona y explora tu colección de videojuegos.</p>
       </div>
-    </section>
+    </div>
   );
 }

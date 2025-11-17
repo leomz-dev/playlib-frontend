@@ -1,211 +1,204 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { Home, LayoutDashboard, Library, Menu, X } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Tipos
-type NavItem = {
-  name: string;
-  icon: React.ReactNode;
-  sectionId: string;
-};
-
 /**
- * Componente de Navegación principal.
- * Barra de navegación inferior con acceso a las secciones principales.
+ * Componente de Navegación principal mejorado.
+ * Detecta automáticamente la sección visible y resalta el botón correspondiente.
  */
 export default function Navbar() {
   const [isVisible, setIsVisible] = useState(true)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState("home")
+  const [activeSection, setActiveSection] = useState("hero")
 
   // Datos de navegación
-  const navItems: NavItem[] = [
-    { 
-      name: "Inicio", 
-      icon: <Home className="h-5 w-5" />,
-      sectionId: "hero"
-    },
-    { 
-      name: "Dashboard", 
-      icon: <LayoutDashboard className="h-5 w-5" />,
-      sectionId: "dashboard"
-    },
-    { 
-      name: "Biblioteca", 
-      icon: <Library className="h-5 w-5" />,
-      sectionId: "biblioteca"
-    },
+  const navItems = [
+    { name: "Inicio", sectionId: "hero" },
+    { name: "Dashboard", sectionId: "dashboard" },
+    { name: "Biblioteca", sectionId: "library" },
   ]
 
-  // Función para desplazarse a una sección
-  const scrollToSection = useCallback((sectionId: string) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' })
-      setActiveSection(sectionId)
-      setIsMobileMenuOpen(false)
-    }
-  }, [])
-
-  // Efecto para manejar el scroll y la visibilidad
+  // Efecto para detectar scroll y sección activa usando Intersection Observer
   useEffect(() => {
+    const sections = ["hero", "dashboard", "library"]
+    
+    // Ocultar navbar en el footer
     const handleScroll = () => {
-      // Actualizar visibilidad del navbar
       const footer = document.querySelector("footer")
       if (footer) {
         const footerTop = footer.getBoundingClientRect().top
-        const windowHeight = window.innerHeight
-        setIsVisible(footerTop >= windowHeight)
+        setIsVisible(footerTop >= window.innerHeight)
       }
+    }
 
-      // Detectar sección activa
-      const sections = navItems.map(item => item.sectionId)
-      const scrollPosition = window.scrollY + 100
-      
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId)
-        if (element) {
-          const offsetTop = element.offsetTop
-          const offsetHeight = element.offsetHeight
-          
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(sectionId)
-            break
-          }
+    // Configurar Intersection Observer para detectar sección activa
+    const observerOptions = {
+      root: null,
+      rootMargin: "-50% 0px -50% 0px", // Detecta cuando la sección cruza el centro del viewport
+      threshold: 0
+    }
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id
+          console.log('Section intersecting:', sectionId)
+          setActiveSection(sectionId)
         }
-      }
+      })
     }
 
-    // Ejecutar al cargar
-    handleScroll()
+    const observer = new IntersectionObserver(observerCallback, observerOptions)
+
+    // Observar cada sección
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId)
+      if (element) {
+        observer.observe(element)
+      }
+    })
+
+    // Listener para el scroll (para ocultar navbar en footer)
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll() // Ejecutar al montar
     
-    // Agregar event listeners
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    
-    // Limpiar
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      observer.disconnect()
+      window.removeEventListener("scroll", handleScroll)
     }
-  }, [navItems])
+  }, [])
+
+  // Función para navegar a una sección
+  const scrollToSection = (sectionId: string, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    
+    const element = document.getElementById(sectionId)
+    if (element) {
+      // Scroll directo a la sección
+      element.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+      
+      // Cerrar menú móvil
+      setIsMobileMenuOpen(false)
+      
+      // Actualizar sección activa después de un pequeño delay para que el scroll se complete
+      setTimeout(() => {
+        setActiveSection(sectionId)
+      }, 100)
+    }
+  }
 
   if (!isVisible) return null
 
-  // Renderizar item de navegación
-  const renderNavItem = (item: NavItem, isMobile = false) => {
-    const isActive = activeSection === item.sectionId
-    const mobileClasses = isMobile 
-      ? 'flex-col py-2 w-full items-center justify-center'
-      : 'flex-row px-5 py-2.5 items-center space-x-2'
-    
-    return (
-      <button
-        key={item.sectionId}
-        onClick={() => scrollToSection(item.sectionId)}
-        className={cn(
-          'flex text-sm font-medium rounded-xl transition-all duration-300',
-          isMobile ? 'text-center' : 'text-left',
-          isActive
-            ? 'text-white bg-white/20 backdrop-blur-md shadow-lg shadow-blue-500/20'
-            : 'text-gray-700 hover:bg-white/10 hover:text-white dark:text-gray-300 dark:hover:text-blue-300',
-          mobileClasses
-        )}
-        aria-current={isActive ? 'page' : undefined}
-      >
-        <span className={cn(
-          'flex items-center justify-center',
-          isMobile ? 'p-2 rounded-full' : ''
-        )}>
-          {item.icon}
-        </span>
-        <span className={cn(isMobile ? 'text-xs mt-1' : '')}>
-          {item.name}
-        </span>
-      </button>
-    )
-  }
-
   return (
     <>
-      {/* Barra de navegación móvil */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-        <div className="relative">
-          {/* Fondo con efecto de vidrio líquido */}
-          <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl border-t border-white/20 dark:border-gray-700/50 shadow-2xl shadow-black/10" />
-          
-          <div className="relative flex justify-between items-center h-16 px-4">
-            {navItems.map(item => renderNavItem(item, true))}
-          </div>
-        </div>
-      </div>
-
-      {/* Barra de navegación de escritorio */}
-      <nav className="hidden md:flex fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50">
-        <div className="relative">
-          {/* Fondo con efecto de vidrio líquido */}
-          <div className="absolute inset-0 bg-white/30 dark:bg-gray-900/50 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/50 shadow-2xl shadow-black/10" />
-          
-          <div className="relative px-6 py-3">
-            <div className="flex items-center space-x-2">
-              {navItems.map(item => renderNavItem(item))}
-            </div>
-          </div>
+      {/* NAVEGACIÓN DE ESCRITORIO */}
+      <nav className="fixed bottom-8 left-0 right-0 z-50 hidden md:flex justify-center pointer-events-none">
+        <div className="bg-linear-to-r from-black/60 via-black/70 to-black/60 backdrop-blur-2xl rounded-full shadow-2xl shadow-red-900/30 p-1.5 flex items-center space-x-1 border border-white/20 max-w-5xl w-auto pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+          {navItems.map((item) => (
+            <button
+              key={item.sectionId}
+              onClick={(e) => scrollToSection(item.sectionId, e)}
+              className={cn(
+                "px-8 py-3.5 rounded-full text-sm font-medium relative overflow-hidden cursor-pointer group",
+                "transition-all duration-500 ease-out",
+                activeSection === item.sectionId
+                  ? [
+                      "text-white font-bold tracking-wider",
+                      "bg-linear-to-br from-red-500 via-red-600 to-red-700",
+                      "shadow-[0_0_20px_rgba(220,38,38,0.6),0_0_40px_rgba(220,38,38,0.3),inset_0_0_1px_rgba(255,255,255,0.1)]",
+                      "scale-105",
+                      "before:absolute before:inset-0 before:bg-linear-to-t before:from-white/20 before:to-transparent before:opacity-0",
+                      "hover:before:opacity-100 before:transition-opacity before:duration-300",
+                      "after:absolute after:inset-0 after:rounded-full after:bg-linear-to-r after:from-transparent after:via-white/30 after:to-transparent",
+                      "after:translate-x-[-200%] hover:after:translate-x-[200%] after:transition-transform after:duration-700",
+                    ].join(" ")
+                  : [
+                      "text-gray-300 hover:text-white",
+                      "hover:bg-white/10 hover:scale-105",
+                      "hover:shadow-lg hover:shadow-white/10",
+                      "active:scale-95"
+                    ].join(" ")
+              )}
+              aria-current={activeSection === item.sectionId ? "page" : undefined}
+            >
+              <span className="relative z-10">{item.name}</span>
+              {activeSection === item.sectionId && (
+                <span className="absolute inset-0 rounded-full bg-red-500/30 blur-xl animate-pulse" />
+              )}
+            </button>
+          ))}
         </div>
       </nav>
 
-      {/* Botón de Hamburguesa */}
-      <div className="fixed bottom-6 left-0 right-0 z-50 flex md:hidden justify-center">
+      {/* NAVEGACIÓN MÓVIL */}
+      <div className="fixed bottom-8 left-0 right-0 z-50 flex md:hidden justify-center pointer-events-none">
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="bg-white/20 backdrop-blur-xl rounded-full shadow-2xl shadow-black/20 w-16 h-16 flex items-center justify-center border border-white/20 text-white transition-all duration-300 hover:bg-white/30 hover:scale-105"
+          className="bg-linear-to-br from-red-500 via-red-600 to-red-700 backdrop-blur-2xl rounded-full shadow-[0_0_25px_rgba(220,38,38,0.7)] w-16 h-16 flex items-center justify-center border border-red-400/50 text-white pointer-events-auto hover:scale-110 active:scale-95 transition-all duration-300 animate-pulse"
           aria-label="Abrir menú"
         >
           <Menu className="h-6 w-6" />
         </button>
       </div>
 
-      {/* Panel del Menú Desplegable */}
+      {/* PANEL DEL MENÚ MÓVIL */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[60] flex flex-col md:hidden">
-          {/* Overlay con efecto de vidrio líquido */}
+        <div className="fixed inset-0 z-60 flex flex-col md:hidden animate-in fade-in duration-300">
           <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" 
+            className="absolute inset-0 bg-black/70 backdrop-blur-md" 
             onClick={() => setIsMobileMenuOpen(false)}
-          ></div>
+          />
 
-          {/* Contenedor del menú con efecto de vidrio líquido */}
-          <div className="relative z-10 mt-auto mx-auto w-full max-w-2xl bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-2xl border-t border-white/20 rounded-t-3xl overflow-hidden transition-transform duration-300 transform translate-y-0">
-            <div className="p-6">
-              <div className="flex flex-col space-y-4">
-                {navItems.map(item => (
+          <div className="relative z-10 mt-20 mx-auto w-[85%] max-w-md bg-linear-to-b from-black/80 via-black/90 to-black/80 backdrop-blur-2xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl shadow-red-900/40 animate-in slide-in-from-bottom-8 duration-500">
+            <div className="flex flex-col">
+              {navItems.map((item, index) => (
+                <div 
+                  key={item.sectionId} 
+                  className="border-b border-white/10 last:border-b-0"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
                   <button
-                    key={item.sectionId}
-                    onClick={() => scrollToSection(item.sectionId)}
-                    className={`flex items-center space-x-4 p-4 rounded-xl transition-all duration-300 w-full text-left ${
+                    onClick={(e) => scrollToSection(item.sectionId, e)}
+                    className={cn(
+                      "w-full py-6 px-8 text-left text-lg font-medium relative overflow-hidden cursor-pointer group",
+                      "transition-all duration-500 ease-out",
                       activeSection === item.sectionId
-                        ? 'bg-white/20 text-white shadow-lg shadow-blue-500/20'
-                        : 'text-gray-200 hover:bg-white/10 hover:text-white'
-                    }`}
+                        ? [
+                            "text-white font-bold tracking-wider",
+                            "bg-linear-to-r from-red-500/50 via-red-600/60 to-red-700/50",
+                            "border-l-4 border-red-400",
+                            "shadow-[inset_0_0_20px_rgba(220,38,38,0.3)]",
+                            "before:absolute before:inset-0 before:bg-linear-to-r before:from-red-500/30 before:via-transparent before:to-red-500/30",
+                            "before:animate-pulse",
+                            "after:absolute after:right-4 after:top-1/2 after:-translate-y-1/2 after:w-2 after:h-2 after:bg-red-400 after:rounded-full after:shadow-[0_0_10px_rgba(220,38,38,0.8)]",
+                          ].join(" ")
+                        : [
+                            "text-gray-300 hover:text-white",
+                            "hover:bg-white/10 hover:pl-10",
+                            "active:scale-95"
+                          ].join(" ")
+                    )}
+                    aria-current={activeSection === item.sectionId ? "page" : undefined}
                   >
-                    <span className={`p-2 rounded-lg ${activeSection === item.sectionId ? 'bg-white/20' : 'bg-white/5'}`}>
-                      {item.icon}
-                    </span>
-                    <span className="text-lg font-medium">{item.name}</span>
+                    <span className="relative z-10">{item.name}</span>
                   </button>
-                ))}
-              </div>
-
-              {/* Botón de Cierre del menú móvil */}
-              <button
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="mt-6 mx-auto bg-white/20 backdrop-blur-xl rounded-full shadow-2xl shadow-black/20 w-14 h-14 flex items-center justify-center border border-white/20 text-white transition-all duration-300 hover:bg-white/30 hover:scale-105"
-                aria-label="Cerrar menú"
-              >
-                <X className="h-6 w-6" />
-              </button>
+                </div>
+              ))}
             </div>
           </div>
+
+          <button
+            onClick={() => setIsMobileMenuOpen(false)}
+            className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-linear-to-br from-white/20 to-white/10 backdrop-blur-lg rounded-full shadow-lg shadow-black/30 w-16 h-16 flex items-center justify-center border border-white/30 text-white hover:bg-white/30 hover:scale-110 active:scale-95 transition-all duration-300"
+            aria-label="Cerrar menú"
+          >
+            <X className="h-6 w-6" />
+          </button>
         </div>
       )}
     </>
