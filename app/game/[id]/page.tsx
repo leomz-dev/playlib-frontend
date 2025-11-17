@@ -4,20 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  ArrowLeft, 
-  Gamepad2, 
-  Clock, 
-  Star, 
-  CheckCircle, 
-  Edit, 
-  Trash2,
-  Monitor,
-  User,
-  Tag,
-  Calendar as CalendarIcon
-} from 'lucide-react';
-import { Game, getGame, deleteGame, updateGame } from '../../services/gameService';
+import { Game, Reseña, getGame, deleteGame, updateGame, addReseña, getReseñas } from '../../services/gameService';
 
 export default function GameDetail() {
   const router = useRouter();
@@ -26,6 +13,16 @@ export default function GameDetail() {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [gameData, setGameData] = useState<Game | null>(null);
+  const [reseñas, setReseñas] = useState<Reseña[]>([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewFormData, setReviewFormData] = useState({
+    nombreUsuario: '',
+    textoReseña: '',
+    calificaciones: 5,
+    horasJugadas: 0,
+    dificultad: 'Normal',
+    recomendaria: true
+  });
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -38,6 +35,7 @@ export default function GameDetail() {
       try {
         const game = await getGame(id as string);
         setGameData(game);
+        setReseñas(game.reseñas || []);
         setError(null);
       } catch (err) {
         console.error('Error al cargar el juego:', err);
@@ -80,47 +78,34 @@ export default function GameDetail() {
     }
   };
 
-  const renderStars = (rating: number) => {
-    return [1, 2, 3, 4, 5].map((star) => (
-      <Star 
-        key={star} 
-        className={`w-5 h-5 ${star <= Math.round(rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} 
-      />
-    ));
-  };
-
-  const getPlatformIcon = (platform: string) => {
-    if (!platform) return <Gamepad2 className="w-5 h-5 text-blue-400" />;
+  const handleSubmitReview = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
     
-    const platformLower = platform.toLowerCase();
-    
-    if (platformLower.includes('playstation') || platformLower.includes('ps')) {
-      return <Gamepad2 className="w-5 h-5 text-blue-400" />;
-    } else if (platformLower.includes('xbox')) {
-      return <Gamepad2 className="w-5 h-5 text-green-400" />;
-    } else if (platformLower.includes('nintendo') || platformLower.includes('switch')) {
-      return <Gamepad2 className="w-5 h-5 text-red-400" />;
-    } else if (platformLower.includes('pc') || platformLower.includes('computer')) {
-      return <Monitor className="w-5 h-5 text-purple-400" />;
-    } else {
-      return <Gamepad2 className="w-5 h-5 text-yellow-400" />;
+    try {
+      const newReview = await addReseña(id as string, reviewFormData);
+      setReseñas([...reseñas, newReview]);
+      setShowReviewForm(false);
+      setReviewFormData({
+        nombreUsuario: '',
+        textoReseña: '',
+        calificaciones: 5,
+        horasJugadas: 0,
+        dificultad: 'Normal',
+        recomendaria: true
+      });
+    } catch (err) {
+      console.error('Error al agregar reseña:', err);
+      setError('No se pudo agregar la reseña');
     }
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'No disponible';
-    return new Date(dateString).toLocaleDateString('es-ES', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center font-['Chakra_Petch']">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#ff4655] mx-auto mb-4"></div>
           <p className="text-gray-300">Cargando información del juego...</p>
         </div>
       </div>
@@ -129,7 +114,7 @@ export default function GameDetail() {
 
   if (error || !gameData) {
     return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center p-4 font-['Chakra_Petch']">
         <div className="text-center max-w-md">
           <div className="bg-red-900/50 border border-red-700 text-red-200 p-4 rounded-lg mb-4">
             <p className="font-semibold">Error al cargar el juego</p>
@@ -137,9 +122,8 @@ export default function GameDetail() {
           </div>
           <Link 
             href="/" 
-            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-[#ff4655] hover:bg-[#ff4655]/80 text-black rounded-lg transition-colors font-bold uppercase tracking-wider font-['Orbitron']"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
             Volver al inicio
           </Link>
         </div>
@@ -161,174 +145,332 @@ export default function GameDetail() {
     fechaCreacion
   } = gameData;
 
+  // Normalizar genero y plataforma a arrays
+  const generosArray = Array.isArray(genero) ? genero : [genero];
+  const plataformasArray = Array.isArray(plataforma) ? plataforma : [plataforma];
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
-      {/* Header with back button and actions */}
-      <header className="bg-black/80 backdrop-blur-sm border-b border-gray-800 sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link 
-            href="/" 
-            className="flex items-center text-gray-300 hover:text-white transition-colors"
+    <div className="relative min-h-screen w-full overflow-x-hidden font-['Chakra_Petch']">
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Orbitron:wght@700;900&display=swap');
+        
+        .parallax-bg {
+          background-attachment: fixed;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: cover;
+        }
+        
+        .glass-card {
+          background: rgba(26, 26, 26, 0.4);
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        
+        .glass-card-strong {
+          background: rgba(26, 26, 26, 0.6);
+          backdrop-filter: blur(25px);
+          -webkit-backdrop-filter: blur(25px);
+          border: 1px solid rgba(255, 70, 85, 0.2);
+          box-shadow: 0 8px 32px 0 rgba(255, 70, 85, 0.15);
+        }
+        
+        .clip-path-button {
+          clip-path: polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%);
+        }
+        
+        .btn-gaming {
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s ease-in-out;
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .btn-gaming:before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          background-color: rgba(255, 255, 255, 0.2);
+          border-radius: 50%;
+          transform: translate(-50%, -50%);
+          transition: width 0.3s ease, height 0.3s ease;
+        }
+        
+        .btn-gaming:active:before {
+          width: 200%;
+          padding-bottom: 200%;
+        }
+        
+        .btn-gaming:hover {
+          transform: translateY(-3px) scale(1.05);
+          box-shadow: 0 0 25px 5px rgba(255, 70, 85, 0.5);
+        }
+        
+        @keyframes flicker {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+        
+        .animate-flicker {
+          animation: flicker 1.5s infinite;
+        }
+      `}</style>
+
+      {/* Parallax Background */}
+      <div 
+        className="absolute inset-0 parallax-bg" 
+        style={{ 
+          backgroundImage: imagenPortada ? `url(${imagenPortada})` : 'none',
+          backgroundColor: '#0a0a0a',
+          zIndex: 0 
+        }}
+      >
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+        {/* Back Button */}
+        <div className="w-full max-w-7xl mx-auto mb-6">
+          <Link
+            href="/"
+            className="btn-gaming clip-path-button inline-flex items-center gap-2 h-10 px-6 bg-[#2a2a38] border border-[#3c3c53] text-white text-sm font-bold uppercase tracking-widest font-['Orbitron'] hover:border-[#ff4655]"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Volver
+            <span className="material-symbols-outlined">arrow_back</span>
+            <span>Volver al Inicio</span>
           </Link>
-          
-          <div className="flex space-x-3">
-            <Link 
-              href={`/game/${id}/edit`}
-              className="flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition-colors"
-            >
-              <Edit className="w-4 h-4 mr-2" />
-              Editar
-            </Link>
-            <button
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isDeleting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
-                  Eliminando...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Eliminar
-                </>
-              )}
-            </button>
-          </div>
         </div>
-      </header>
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Game header with cover and basic info */}
-        <div className="flex flex-col md:flex-row gap-8 mb-8">
-          <div className="w-full md:w-1/3 lg:w-1/4">
-            <div className="relative aspect-2/3 bg-gray-900 rounded-xl overflow-hidden">
-              {imagenPortada ? (
-                <Image
-                  src={imagenPortada}
-                  alt={titulo}
-                  fill
-                  className="object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-500">
-                  <Gamepad2 className="w-12 h-12" />
-                </div>
-              )}
-            </div>
+        <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          {/* Image Column */}
+          <div className="lg:col-span-4 flex flex-col items-center">
+            <img 
+              src={imagenPortada || '/placeholder-game.png'} 
+              alt={titulo}
+              className="w-full max-w-sm rounded-xl border-2 border-[#ff4655]/50"
+              style={{ boxShadow: '0 0 20px 8px rgba(255, 70, 85, 0.4)' }}
+            />
+          </div>
+
+          {/* Info Column */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
             
-            <div className="mt-4 flex items-center justify-between gap-2">
-              <button
-                onClick={toggleCompletion}
-                className={`flex-1 flex items-center justify-center py-2 px-4 rounded-lg border ${
-                  completado 
-                    ? 'bg-green-900/30 border-green-600 text-green-400 hover:bg-green-900/50' 
-                    : 'bg-gray-800/50 border-gray-700 text-gray-300 hover:bg-gray-700/50'
-                } transition-colors`}
-              >
-                <CheckCircle className={`w-5 h-5 mr-2 ${completado ? 'fill-current' : ''}`} />
-                {completado ? 'Completado' : 'Marcar como completado'}
-              </button>
+            {/* Title Card */}
+            <div className="glass-card-strong p-6 rounded-xl">
+              <h1 className="text-5xl md:text-7xl font-['Orbitron'] font-black tracking-wider text-white uppercase animate-flicker">
+                {titulo}
+              </h1>
+              <h2 className="text-2xl font-['Orbitron'] text-[#ff4655] font-bold mt-1">
+                {generosArray.join(' • ') || 'Género no especificado'}
+              </h2>
+            </div>
 
-              <button 
-                onClick={() => alert('Función de compartir no implementada todavía.')}
-                className="flex-1 border border-[#2a2a2a] hover:border-[#ff4757] text-gray-400 hover:text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200">
-                Compartir
-              </button>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              
+              {/* Platform Card */}
+              <div className="glass-card p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                <span className="material-symbols-outlined text-[#ff4655] text-4xl">public</span>
+                <p className="text-lg font-semibold mt-2 font-['Orbitron']">Plataforma</p>
+                <div className="flex gap-2 mt-2 flex-wrap justify-center">
+                  {plataformasArray.map((p, i) => (
+                    <span key={i} className="bg-[#2a2a38] text-white text-xs font-bold px-3 py-1 rounded-full border border-[#3c3c53]">
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hours Card */}
+              <div className="glass-card p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                <span className="material-symbols-outlined text-[#ff4655] text-4xl">hourglass_top</span>
+                <p className="text-lg font-semibold mt-2 font-['Orbitron']">Horas Jugadas</p>
+                <p className="text-2xl text-white font-bold">{horasJugadas || 0}</p>
+              </div>
+
+              {/* Status Card */}
+              <div className="glass-card p-4 rounded-xl flex flex-col items-center justify-center text-center">
+                <span className="material-symbols-outlined text-[#ff4655] text-4xl">workspace_premium</span>
+                <p className="text-lg font-semibold mt-2 font-['Orbitron']">Estado</p>
+                <p className="text-2xl text-white font-bold">{completado ? 'Completado' : 'No Iniciado'}</p>
+              </div>
+            </div>
+
+            {/* Actions Card */}
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-2xl font-bold font-['Orbitron'] text-[#ff4655] mb-4">Acciones</h3>
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+                
+                <Link
+                  href={`/game/${id}/edit`}
+                  className="btn-gaming clip-path-button flex-1 min-w-[150px] flex items-center justify-center gap-2 h-12 px-6 bg-[#ff4655] text-black text-sm font-bold uppercase tracking-widest font-['Orbitron']"
+                >
+                  <span className="material-symbols-outlined">edit</span>
+                  <span>Editar</span>
+                </Link>
+
+                <button
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="btn-gaming clip-path-button flex-1 min-w-[150px] flex items-center justify-center gap-2 h-12 px-6 bg-transparent border-2 border-[#ff4655] text-[#ff4655] text-sm font-bold uppercase tracking-widest font-['Orbitron'] hover:bg-[#ff4655] hover:text-black disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-current"></div>
+                      <span>Eliminando...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined">delete</span>
+                      <span>Eliminar</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                  className="btn-gaming clip-path-button flex-1 min-w-[150px] flex items-center justify-center gap-2 h-12 px-6 bg-[#2a2a38] border border-[#3c3c53] text-white text-sm font-bold uppercase tracking-widest font-['Orbitron'] hover:border-[#ff4655]"
+                >
+                  <span className="material-symbols-outlined">add_comment</span>
+                  <span>{showReviewForm ? 'Cancelar' : 'Añadir Reseña'}</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="flex-1">
-            <div className="flex flex-col h-full">
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">{titulo}</h1>
-                
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300 mb-4">
-                  <span className="flex items-center">
-                    {getPlatformIcon(plataforma)}
-                    <span className="ml-2">{plataforma || 'Plataforma no especificada'}</span>
-                  </span>
-                  
-                  <span className="flex items-center">
-                    <Tag className="w-4 h-4 mr-1 text-purple-400" />
-                    {genero || 'Género no especificado'}
-                  </span>
-                  
-                  {añoLanzamiento && (
-                    <span className="flex items-center">
-                      <CalendarIcon className="w-4 h-4 mr-1 text-blue-400" />
-                      {añoLanzamiento}
-                    </span>
-                  )}
-                  
-                  {desarrollador && (
-                    <span className="flex items-center">
-                      <User className="w-4 h-4 mr-1 text-green-400" />
-                      {desarrollador}
-                    </span>
-                  )}
-                </div>
-                
-                {calificacion > 0 && (
-                  <div className="flex items-center mb-4">
-                    <div className="flex">
-                      {renderStars(calificacion)}
+          {/* Review Form */}
+          {showReviewForm && (
+            <div className="lg:col-span-12 w-full mt-4">
+              <div className="glass-card p-6 rounded-xl">
+                <h3 className="text-2xl font-bold font-['Orbitron'] text-[#ff4655] mb-4">Nueva Reseña</h3>
+                <form onSubmit={handleSubmitReview} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-white mb-2 font-['Orbitron']">Nombre de Usuario</label>
+                      <input
+                        type="text"
+                        value={reviewFormData.nombreUsuario}
+                        onChange={(e) => setReviewFormData({...reviewFormData, nombreUsuario: e.target.value})}
+                        className="w-full px-4 py-2 bg-[#2a2a38] border border-[#3c3c53] text-white rounded-lg focus:border-[#ff4655] focus:outline-none"
+                        required
+                      />
                     </div>
-                    <span className="ml-2 text-yellow-400 font-medium">
-                      {calificacion.toFixed(1)}
-                    </span>
+                    <div>
+                      <label className="block text-white mb-2 font-['Orbitron']">Horas Jugadas</label>
+                      <input
+                        type="number"
+                        value={reviewFormData.horasJugadas}
+                        onChange={(e) => setReviewFormData({...reviewFormData, horasJugadas: parseInt(e.target.value) || 0})}
+                        className="w-full px-4 py-2 bg-[#2a2a38] border border-[#3c3c53] text-white rounded-lg focus:border-[#ff4655] focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white mb-2 font-['Orbitron']">Calificación (0-5)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="5"
+                        step="0.5"
+                        value={reviewFormData.calificaciones}
+                        onChange={(e) => setReviewFormData({...reviewFormData, calificaciones: parseFloat(e.target.value) || 0})}
+                        className="w-full px-4 py-2 bg-[#2a2a38] border border-[#3c3c53] text-white rounded-lg focus:border-[#ff4655] focus:outline-none"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-white mb-2 font-['Orbitron']">Dificultad</label>
+                      <select
+                        value={reviewFormData.dificultad}
+                        onChange={(e) => setReviewFormData({...reviewFormData, dificultad: e.target.value})}
+                        className="w-full px-4 py-2 bg-[#2a2a38] border border-[#3c3c53] text-white rounded-lg focus:border-[#ff4655] focus:outline-none"
+                      >
+                        <option value="Fácil">Fácil</option>
+                        <option value="Normal">Normal</option>
+                        <option value="Difícil">Difícil</option>
+                        <option value="Muy Difícil">Muy Difícil</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-white mb-2 font-['Orbitron']">Reseña</label>
+                    <textarea
+                      value={reviewFormData.textoReseña}
+                      onChange={(e) => setReviewFormData({...reviewFormData, textoReseña: e.target.value})}
+                      className="w-full px-4 py-2 bg-[#2a2a38] border border-[#3c3c53] text-white rounded-lg focus:border-[#ff4655] focus:outline-none h-32 resize-none"
+                      required
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={reviewFormData.recomendaria}
+                      onChange={(e) => setReviewFormData({...reviewFormData, recomendaria: e.target.checked})}
+                      className="w-4 h-4"
+                    />
+                    <label className="text-white font-['Orbitron']">Recomendaría este juego</label>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn-gaming clip-path-button w-full flex items-center justify-center gap-2 h-12 px-6 bg-[#ff4655] text-black text-sm font-bold uppercase tracking-widest font-['Orbitron']"
+                  >
+                    <span className="material-symbols-outlined">send</span>
+                    <span>Enviar Reseña</span>
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Reviews Section - Full Width */}
+          <div className="lg:col-span-12 w-full mt-4">
+            <div className="glass-card p-6 rounded-xl">
+              <h3 className="text-3xl font-bold font-['Orbitron'] text-[#ff4655] mb-4 text-center">Reseñas ({reseñas.length})</h3>
+              <div className="space-y-4">
+                {reseñas.length > 0 ? (
+                  reseñas.map((review, idx) => (
+                    <div key={idx} className="glass-card-strong p-6 rounded-lg">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="text-xl font-bold text-white font-['Orbitron']">{review.nombreUsuario}</h4>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-yellow-400">★</span>
+                            <span className="text-white font-bold">{review.calificaciones}/5</span>
+                            <span className="text-gray-400">•</span>
+                            <span className="text-gray-400">{review.horasJugadas}h jugadas</span>
+                            <span className="text-gray-400">•</span>
+                            <span className="text-gray-400">{review.dificultad}</span>
+                          </div>
+                        </div>
+                        {review.recomendaria && (
+                          <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-bold border border-green-500/30">
+                            Recomendado
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[#a0a0b8] leading-relaxed">{review.textoReseña}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="glass-card-strong p-6 rounded-lg text-center">
+                    <p className="text-[#a0a0b8] text-lg">Aún no hay reseñas. ¡Sé el primero en agregar una!</p>
                   </div>
                 )}
-                
-                <div className="mt-6">
-                  <h2 className="text-xl font-semibold mb-4 text-white">Descripción</h2>
-                  <p className="text-gray-300 leading-relaxed">
-                    {descripcion || 'No hay descripción disponible para este juego.'}
-                  </p>
-                </div>
               </div>
             </div>
           </div>
         </div>
-        
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gray-900/50 p-6 rounded-xl">
-            <h3 className="text-lg font-semibold mb-4 text-white">Detalles del juego</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Estado</span>
-                {completado ? (
-                  <span className="text-green-400 flex items-center">
-                    <CheckCircle className="w-4 h-4 mr-1" /> Completado
-                  </span>
-                ) : (
-                  <span className="text-yellow-400">No iniciado</span>
-                )}
-              </div>
-              
-              <div className="flex justify-between">
-                <span className="text-gray-400">Horas jugadas</span>
-                <span className="text-white">{horasJugadas || 'No registradas'}</span>
-              </div>
-              
-              {fechaCreacion && (
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Añadido el</span>
-                  <span className="text-white">{formatDate(fechaCreacion)}</span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </main>
+      </div>
+
+      {/* Material Symbols Link */}
+      <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
     </div>
   );
 }

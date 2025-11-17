@@ -1,10 +1,22 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
 
+export interface Reseña {
+  _id?: string;
+  juegoId: string;
+  nombreUsuario: string;
+  textoReseña: string;
+  calificaciones: number;
+  horasJugadas: number;
+  dificultad: string;
+  recomendaria: boolean;
+  fechaCreacion?: string;
+}
+
 export interface Game {
   _id?: string;
   titulo: string;
-  genero: string;
-  plataforma: string;
+  genero: string | string[];
+  plataforma: string | string[];
   añoLanzamiento: number;
   desarrollador: string;
   imagenPortada: string;
@@ -14,6 +26,7 @@ export interface Game {
   calificacion?: number;
   calificaciones?: number[];
   horasJugadas?: number;
+  reseñas?: Reseña[];
 }
 
 interface GameStats {
@@ -161,5 +174,31 @@ export const getGameStats = async (): Promise<GameStats> => {
     return handleResponse<GameStats>(response);
   } catch (error) {
     return handleNetworkError(error, 'Error al obtener las estadísticas de los juegos');
+  }
+};
+
+export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' | 'juegoId' | 'fechaCreacion'>): Promise<Reseña> => {
+  try {
+    const response = await fetch(`${API_URL}/${juegoId}/reseñas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reseña)
+    });
+    
+    return handleResponse<Reseña>(response);
+  } catch (error) {
+    return handleNetworkError(error, 'Error al agregar la reseña');
+  }
+};
+
+export const getReseñas = async (juegoId: string): Promise<Reseña[]> => {
+  try {
+    const response = await fetch(`${API_URL}/${juegoId}/reseñas`, {
+      cache: 'no-store'
+    });
+    
+    return handleResponse<Reseña[]>(response);
+  } catch (error) {
+    return handleNetworkError(error, 'Error al obtener las reseñas');
   }
 };

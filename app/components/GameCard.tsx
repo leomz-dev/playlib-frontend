@@ -8,7 +8,7 @@ import { Icon } from '@iconify/react';
 import { Game } from '../services/gameService';
 import { rateGame } from '../services/gameService';
 
-interface GameCardProps extends Omit<Game, 'fechaCreacion' | 'completado'> {
+interface GameCardProps extends Omit<Game, 'fechaCreacion' | 'completado' | 'reseñas'> {
   calificaciones?: number[];
   onRatingChange?: (id: string, rating: number) => void;
   onDelete?: (id: string) => void;
@@ -54,6 +54,11 @@ export default function GameCard({
     return isNaN(num) ? '0' : num.toFixed(decimals);
   };
 
+  // Normalizar genero y plataforma a arrays
+  const generosArray = Array.isArray(genero) ? genero : [genero];
+  const plataformasArray = Array.isArray(plataforma) ? plataforma : [plataforma];
+  const primeraPlataforma = plataformasArray[0] || "PC";
+
   // Función para obtener el estilo y el ícono según la plataforma
   const getPlatformStyles = (platform: string) => {
     const platformLower = platform.toLowerCase();
@@ -94,7 +99,7 @@ export default function GameCard({
     };
   };
   
-  const platformStyles = getPlatformStyles(plataforma);
+  const platformStyles = getPlatformStyles(primeraPlataforma);
   
   // Valores formateados seguros
   const formattedCalificacion = formatNumber(averageRating);
@@ -157,7 +162,10 @@ export default function GameCard({
         <div className="absolute top-3 left-3 z-10">
           <div className={`flex items-center px-3 py-1 rounded-full ${platformStyles.bgColor} ${platformStyles.textColor} shadow-lg backdrop-blur-md`}>
             {platformStyles.icon}
-            <span className="ml-1 text-xs font-semibold">{plataforma}</span>
+            <span className="ml-1 text-xs font-semibold">{primeraPlataforma}</span>
+            {plataformasArray.length > 1 && (
+              <span className="ml-1 text-xs">+{plataformasArray.length - 1}</span>
+            )}
           </div>
         </div>
         
@@ -183,9 +191,9 @@ export default function GameCard({
         
         {/* Genre Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {genero.split(',').map((g, i) => (
+          {generosArray.map((g, i) => (
             <span key={i} className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-300 text-xs rounded-full backdrop-blur-sm">
-              {g.trim()}
+              {typeof g === 'string' ? g.trim() : g}
             </span>
           ))}
         </div>
