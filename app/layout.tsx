@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { paladins } from './fonts';
+import { chakraPetch, nunitoSans } from './fonts';
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${paladins.variable}`}>
-      <body className="font-sans">
+    <html lang="en" className={`${chakraPetch.variable} ${nunitoSans.variable}`}>
+      <body className="font-nunito bg-black">
         {children}
       </body>
     </html>

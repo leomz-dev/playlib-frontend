@@ -98,7 +98,7 @@ export default function Navbar() {
     <>
       {/* NAVEGACIÓN DE ESCRITORIO */}
       <nav className="fixed bottom-8 left-0 right-0 z-50 hidden md:flex justify-center pointer-events-none">
-        <div className="bg-linear-to-r from-black/60 via-black/70 to-black/60 backdrop-blur-2xl rounded-full shadow-2xl shadow-red-900/30 p-1.5 flex items-center space-x-1 border border-white/20 max-w-5xl w-auto pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="backdrop-blur-2xl bg-black/40 border border-red-500/40 rounded-full shadow-[0_0_60px_rgba(220,38,38,0.4)] p-1.5 flex items-center space-x-1 max-w-5xl w-auto pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-700">
           {navItems.map((item) => (
             <button
               key={item.sectionId}
@@ -109,12 +109,12 @@ export default function Navbar() {
                 activeSection === item.sectionId
                   ? [
                       "text-white font-bold tracking-wider",
-                      "bg-linear-to-br from-red-500 via-red-600 to-red-700",
-                      "shadow-[0_0_20px_rgba(220,38,38,0.6),0_0_40px_rgba(220,38,38,0.3),inset_0_0_1px_rgba(255,255,255,0.1)]",
+                      "bg-gradient-to-br from-red-500 via-red-600 to-red-700",
+                      "shadow-[0_0_30px_rgba(220,38,38,0.8),0_0_60px_rgba(220,38,38,0.4),inset_0_0_2px_rgba(255,255,255,0.2)]",
                       "scale-105",
-                      "before:absolute before:inset-0 before:bg-linear-to-t before:from-white/20 before:to-transparent before:opacity-0",
+                      "before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent before:opacity-0",
                       "hover:before:opacity-100 before:transition-opacity before:duration-300",
-                      "after:absolute after:inset-0 after:rounded-full after:bg-linear-to-r after:from-transparent after:via-white/30 after:to-transparent",
+                      "after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-transparent after:via-white/30 after:to-transparent",
                       "after:translate-x-[-200%] hover:after:translate-x-[200%] after:transition-transform after:duration-700",
                     ].join(" ")
                   : [
@@ -139,7 +139,7 @@ export default function Navbar() {
       <div className="fixed bottom-8 left-0 right-0 z-50 flex md:hidden justify-center pointer-events-none">
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="bg-linear-to-br from-red-500 via-red-600 to-red-700 backdrop-blur-2xl rounded-full shadow-[0_0_25px_rgba(220,38,38,0.7)] w-16 h-16 flex items-center justify-center border border-red-400/50 text-white pointer-events-auto hover:scale-110 active:scale-95 transition-all duration-300 animate-pulse"
+          className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 backdrop-blur-2xl rounded-full shadow-[0_0_40px_rgba(220,38,38,0.8)] w-16 h-16 flex items-center justify-center border border-red-400/60 text-white pointer-events-auto hover:scale-110 active:scale-95 transition-all duration-300 animate-pulse"
           aria-label="Abrir menú"
         >
           <Menu className="h-6 w-6" />
@@ -154,7 +154,7 @@ export default function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          <div className="relative z-10 mt-20 mx-auto w-[85%] max-w-md bg-linear-to-b from-black/80 via-black/90 to-black/80 backdrop-blur-2xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl shadow-red-900/40 animate-in slide-in-from-bottom-8 duration-500">
+          <div className="relative z-10 mt-20 mx-auto w-[85%] max-w-md backdrop-blur-2xl bg-black/60 border border-red-500/40 rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.5)] animate-in slide-in-from-bottom-8 duration-500">
             <div className="flex flex-col">
               {navItems.map((item, index) => (
                 <div 
@@ -170,12 +170,12 @@ export default function Navbar() {
                       activeSection === item.sectionId
                         ? [
                             "text-white font-bold tracking-wider",
-                            "bg-linear-to-r from-red-500/50 via-red-600/60 to-red-700/50",
+                            "bg-gradient-to-r from-red-500/50 via-red-600/60 to-red-700/50",
                             "border-l-4 border-red-400",
-                            "shadow-[inset_0_0_20px_rgba(220,38,38,0.3)]",
-                            "before:absolute before:inset-0 before:bg-linear-to-r before:from-red-500/30 before:via-transparent before:to-red-500/30",
+                            "shadow-[inset_0_0_30px_rgba(220,38,38,0.4)]",
+                            "before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-500/30 before:via-transparent before:to-red-500/30",
                             "before:animate-pulse",
-                            "after:absolute after:right-4 after:top-1/2 after:-translate-y-1/2 after:w-2 after:h-2 after:bg-red-400 after:rounded-full after:shadow-[0_0_10px_rgba(220,38,38,0.8)]",
+                            "after:absolute after:right-4 after:top-1/2 after:-translate-y-1/2 after:w-2 after:h-2 after:bg-red-400 after:rounded-full after:shadow-[0_0_15px_rgba(220,38,38,0.9)]",
                           ].join(" ")
                         : [
                             "text-gray-300 hover:text-white",

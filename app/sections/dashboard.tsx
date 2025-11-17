@@ -234,44 +234,44 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-gray-900 to-gray-800 text-white p-4 md:p-8">
+    <div className="min-h-screen text-white p-4 md:p-8 py-20">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h2 className="text-4xl md:text-5xl font-bold mb-2 bg-clip-text text-transparent bg-linear-to-r from-green-100 to-blue-500">
+        <div className="mb-8 backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6">
+          <h2 className="text-4xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]">
             Estadísticas de Juegos
           </h2>
-          <p className="text-gray-400">Visualiza y analiza tu actividad de juego</p>
+          <p className="text-gray-300">Visualiza y analiza tu actividad de juego</p>
         </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard 
               title="Total de Juegos" 
               value={totalGames} 
               icon="🎮" 
-              color="green" 
+              color="from-red-600 to-red-800" 
             />
             <StatCard 
               title="Juegos Completados" 
               value={completedGames} 
               icon="✅" 
-              color="blue" 
+              color="from-green-600 to-green-800" 
             />
             <StatCard 
               title="Tasa de Finalización" 
               value={`${completionRate.toFixed(1)}%`} 
               icon="🏆" 
-              color="yellow" 
+              color="from-yellow-600 to-yellow-800" 
             />
             <StatCard 
               title="Juegos por Plataforma" 
               value={platformDistribution.length} 
               icon="🎯" 
-              color="purple" 
+              color="from-purple-600 to-purple-800" 
             />
           </div>
         {/* Gráfico de Línea - Horas Jugadas por Mes */}
-        <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl mb-8">
-          <h3 className="text-xl font-bold mb-4 text-green-400">Horas Jugadas por Mes</h3>
+        <div className="backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6 shadow-[0_0_40px_rgba(220,38,38,0.2)] hover:shadow-[0_0_60px_rgba(220,38,38,0.3)] transition-all duration-300 mb-8">
+          <h3 className="text-xl font-bold mb-4 text-red-400">Horas Jugadas por Mes</h3>
           <div className="h-80">
             {isClient && (
               <Line
@@ -285,8 +285,8 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Gráfico de Donut - Distribución por Plataforma */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
-            <h3 className="text-xl font-bold mb-4 text-blue-400">Distribución por Plataforma</h3>
+          <div className="backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6 shadow-[0_0_40px_rgba(220,38,38,0.2)] hover:shadow-[0_0_60px_rgba(220,38,38,0.3)] transition-all duration-300">
+            <h3 className="text-xl font-bold mb-4 text-red-400">Distribución por Plataforma</h3>
             <div className="h-80 flex flex-col items-center justify-center">
               {isClient && (
                 <div className="w-full h-full max-w-md">
@@ -323,8 +323,8 @@ export default function Dashboard() {
           </div>
 
           {/* Gráfico de Radar - Distribución por Género */}
-          <div className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50 shadow-xl">
-            <h3 className="text-xl font-bold mb-4 text-yellow-400">Distribución por Género</h3>
+          <div className="backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6 shadow-[0_0_40px_rgba(220,38,38,0.2)] hover:shadow-[0_0_60px_rgba(220,38,38,0.3)] transition-all duration-300">
+            <h3 className="text-xl font-bold mb-4 text-red-400">Distribución por Género</h3>
             <div className="h-80">
               {isClient && (
                 <Radar
@@ -343,13 +343,13 @@ export default function Dashboard() {
 }
 
 const StatCard = ({ title, value, icon, color }: { title: string; value: string | number; icon: string; color: string }) => (
-  <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-6 border border-gray-700/50 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+  <div className="backdrop-blur-xl bg-black/30 border border-red-500/30 rounded-2xl p-6 shadow-[0_0_30px_rgba(220,38,38,0.2)] hover:shadow-[0_0_50px_rgba(220,38,38,0.4)] transition-all hover:-translate-y-1 group">
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-gray-400 text-sm font-medium">{title}</p>
-        <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
+        <p className="text-gray-300 text-sm font-medium">{title}</p>
+        <h3 className="text-3xl font-bold text-white mt-2 group-hover:text-red-400 transition-colors">{value}</h3>
       </div>
-      <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-2xl`}>
+      <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
     </div>

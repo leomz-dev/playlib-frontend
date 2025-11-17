@@ -87,11 +87,11 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
   ];
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-[#1a1a1a] p-6 rounded-lg border border-[#2a2a2a]">
-      <h2 className="text-2xl font-bold text-white mb-6">Agregar Nuevo Juego</h2>
+    <form onSubmit={handleSubmit} className="space-y-6 backdrop-blur-xl bg-black/40 border border-red-500/30 p-8 rounded-2xl shadow-[0_0_40px_rgba(220,38,38,0.2)]">
+      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 mb-6">Agregar Nuevo Juego</h2>
       
       {error && (
-        <div className="p-3 bg-red-500/20 border border-red-500 text-red-200 rounded-md">
+        <div className="p-4 backdrop-blur-md bg-red-500/20 border border-red-500/50 text-red-200 rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)]">
           {error}
         </div>
       )}
@@ -105,7 +105,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             value={formData.titulo}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -116,7 +116,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             value={formData.genero}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           >
             <option value="">Seleccionar género</option>
             {genres.map(genre => (
@@ -134,7 +134,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             value={formData.plataforma}
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           >
             {platforms.map(platform => (
               <option key={platform} value={platform}>
@@ -153,7 +153,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             max={new Date().getFullYear() + 1}
             value={formData.añoLanzamiento}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -164,7 +164,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             name="desarrollador"
             value={formData.desarrollador}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -176,7 +176,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             value={formData.imagenPortada}
             onChange={handleChange}
             placeholder="https://ejemplo.com/imagen.jpg"
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -189,7 +189,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             step="0.5"
             value={formData.horasJugadas}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -203,7 +203,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             step="0.5"
             value={formData.calificacion}
             onChange={handleChange}
-            className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+            className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
           />
         </div>
 
@@ -214,7 +214,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             name="completado"
             checked={formData.completado}
             onChange={handleChange}
-            className="h-4 w-4 text-[#ff4757] rounded border-gray-600 focus:ring-[#ff4757]"
+            className="h-4 w-4 text-red-500 bg-black/40 rounded border-red-500/30 focus:ring-red-500"
           />
           <label htmlFor="completado" className="text-sm font-medium text-gray-300">
             Completado
@@ -229,7 +229,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
           rows={4}
           value={formData.descripcion}
           onChange={handleChange}
-          className="w-full px-4 py-2 bg-[#2a2a2a] border border-[#3a3a3a] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+          className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none"
         />
       </div>
 
@@ -252,14 +252,14 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
             });
             setError('');
           }}
-          className="px-4 py-2 text-sm font-medium text-gray-300 bg-transparent border border-gray-600 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
+          className="px-6 py-3 text-sm font-medium text-gray-300 bg-black/20 backdrop-blur-md border border-red-500/30 rounded-xl hover:bg-red-500/10 hover:border-red-500/50 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
         >
           Limpiar
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-2 text-sm font-medium text-white bg-[#ff4757] rounded-md hover:bg-[#ff3742] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff4757] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 rounded-xl hover:from-red-500 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Agregando...' : 'Agregar Juego'}
         </button>

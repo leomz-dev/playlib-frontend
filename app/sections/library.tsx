@@ -120,14 +120,14 @@ export default function GameLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white p-6 md:p-8 scroll-mt-16">
+    <div className="min-h-screen text-white p-6 md:p-8 scroll-mt-16 py-20">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-3xl md:text-4xl font-bold">Mi Biblioteca de Juegos</h1>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6">
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]">Mi Biblioteca de Juegos</h1>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setIsFormVisible(!isFormVisible)}
-              className="px-4 py-2 bg-[#ff4757] text-white rounded-md hover:bg-[#ff3742] transition-colors"
+              className="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-500 hover:to-red-600 transition-all duration-300 shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] font-semibold"
             >
               {isFormVisible ? 'Cerrar Formulario' : 'Agregar Juego'}
             </button>
@@ -160,7 +160,7 @@ export default function GameLibrary() {
         )}
 
         {/* Search and Filter Section */}
-        <div className="mb-8 bg-[#1a1a1a] p-6 rounded-lg">
+        <div className="mb-8 backdrop-blur-xl bg-black/30 border border-red-500/20 p-6 rounded-2xl shadow-[0_0_30px_rgba(220,38,38,0.2)]">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             {/* Search Input */}
             <div>
@@ -174,7 +174,7 @@ export default function GameLibrary() {
                 value={filters.searchTerm}
                 onChange={handleFilterChange}
                 placeholder="Buscar juegos..."
-                className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+                className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
               />
             </div>
 
@@ -188,7 +188,7 @@ export default function GameLibrary() {
                 name="genero"
                 value={filters.genero}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+                className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
               >
                 <option value="">Todos los géneros</option>
                 {uniqueGenres.map(genre => (
@@ -209,7 +209,7 @@ export default function GameLibrary() {
                 name="plataforma"
                 value={filters.plataforma}
                 onChange={handleFilterChange}
-                className="w-full px-3 py-2 bg-[#2d2d2d] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-[#ff4757]"
+                className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
               >
                 <option value="">Todas las plataformas</option>
                 {uniquePlatforms.map(platform => (
@@ -225,7 +225,7 @@ export default function GameLibrary() {
           <div className="flex justify-end">
             <button
               onClick={clearFilters}
-              className="px-4 py-2 text-sm text-gray-300 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-gray-300 hover:text-red-400 transition-colors backdrop-blur-md bg-white/5 rounded-lg border border-white/10 hover:border-red-500/30"
             >
               Limpiar filtros
             </button>

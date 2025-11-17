@@ -299,6 +299,7 @@ const Waves: React.FC<WavesProps> = ({
       ctx.clearRect(0, 0, width, height);
       ctx.beginPath();
       ctx.strokeStyle = configRef.current.lineColor;
+      ctx.lineWidth = 2;
       linesRef.current.forEach(points => {
         let p1 = moved(points[0], false);
         ctx.moveTo(p1.x, p1.y);
@@ -382,9 +383,11 @@ const Waves: React.FC<WavesProps> = ({
       ref={containerRef}
       style={{
         backgroundColor,
+        width: '100%',
+        height: '100%',
         ...style
       }}
-      className={`absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none ${className}`}
+      className={`w-full h-full overflow-hidden pointer-events-none ${className}`}
     >
       <div
         className="absolute top-0 left-0 bg-[#160000] rounded-full w-2 h-2 pointer-events-none"

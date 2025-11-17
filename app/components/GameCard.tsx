@@ -130,7 +130,7 @@ export default function GameCard({
 
   return (
     <div 
-      className={`relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 transform ${isHovered ? 'scale-105 -translate-y-1' : 'scale-100'}`}
+      className={`relative backdrop-blur-xl bg-black/40 border border-red-500/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] transition-all duration-300 transform ${isHovered ? 'scale-105 -translate-y-2 border-red-500/60' : 'scale-100'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -145,24 +145,24 @@ export default function GameCard({
               className="object-cover transition-all duration-500"
               style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
-            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
           </>
         ) : (
-          <div className="w-full h-full bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-black/60 to-black/80 flex items-center justify-center">
             {platformStyles.icon}
           </div>
         )}
         
         {/* Platform Badge */}
         <div className="absolute top-3 left-3 z-10">
-          <div className={`flex items-center px-3 py-1 rounded-full ${platformStyles.bgColor} ${platformStyles.textColor} shadow-lg`}>
+          <div className={`flex items-center px-3 py-1 rounded-full ${platformStyles.bgColor} ${platformStyles.textColor} shadow-lg backdrop-blur-md`}>
             {platformStyles.icon}
             <span className="ml-1 text-xs font-semibold">{plataforma}</span>
           </div>
         </div>
         
         {/* Rating Badge */}
-        <div className="absolute top-3 right-3 z-10 flex items-center bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full">
+        <div className="absolute top-3 right-3 z-10 flex items-center bg-black/60 backdrop-blur-md border border-yellow-500/30 px-2 py-1 rounded-full shadow-[0_0_15px_rgba(234,179,8,0.3)]">
           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
           <span className="ml-1 text-sm font-semibold text-white">{formattedCalificacion}</span>
         </div>
@@ -184,17 +184,17 @@ export default function GameCard({
         {/* Genre Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {genero.split(',').map((g, i) => (
-            <span key={i} className="px-2 py-1 bg-gray-800 text-gray-300 text-xs rounded-full">
+            <span key={i} className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-300 text-xs rounded-full backdrop-blur-sm">
               {g.trim()}
             </span>
           ))}
         </div>
         
         {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-800">
+        <div className="flex items-center justify-between pt-2 border-t border-red-500/20">
           <Link 
             href={`/game/${_id}`}
-            className="flex-1 mr-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold text-center transition-colors flex items-center justify-center"
+            className="flex-1 mr-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl text-sm font-semibold text-center transition-all duration-300 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)]"
           >
             <Play className="w-4 h-4 mr-2" />
             Ver más
@@ -203,7 +203,7 @@ export default function GameCard({
           {showActions && onDelete && (
             <button 
               onClick={handleDelete}
-              className="p-2.5 text-gray-400 hover:text-red-400 transition-colors rounded-lg hover:bg-gray-800"
+              className="p-2.5 text-gray-400 hover:text-red-400 transition-colors rounded-xl hover:bg-red-500/20 backdrop-blur-sm border border-transparent hover:border-red-500/30"
               title="Eliminar juego"
             >
               <Trash2 className="w-5 h-5" />
