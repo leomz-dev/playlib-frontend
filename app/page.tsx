@@ -1,4 +1,4 @@
-import NavNew from "./sections/nav-new";
+import Nav from "./sections/nav";
 import Hero from "./sections/hero";
 import Dashboard from "./sections/dashboard";
 import Library from "./sections/library";
@@ -23,13 +23,13 @@ export default function Home() {
           yGap={40}
         />
       </div>
-      
+
       {/* Gradiente overlay sutil para profundidad sin oscurecer las waves */}
       <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
-      
+
       {/* Contenido con relative positioning */}
       <div className="relative z-10">
-        <NavNew />
+        <Nav />
         <section id="hero">
           <Hero />
         </section>

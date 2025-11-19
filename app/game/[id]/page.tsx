@@ -281,7 +281,7 @@ export default function GameDetail() {
                 <p className="text-lg font-semibold mt-2 font-['Orbitron']">Plataforma</p>
                 <div className="flex gap-2 mt-2 flex-wrap justify-center">
                   {plataformasArray.map((p, i) => (
-                    <span key={i} className="bg-[#2a2a38] text-white text-xs font-bold px-3 py-1 rounded-full border border-[#3c3c53]">
+                    <span key={`${id}-platform-${i}-${p}`} className="bg-[#2a2a38] text-white text-xs font-bold px-3 py-1 rounded-full border border-[#3c3c53]">
                       {p}
                     </span>
                   ))}

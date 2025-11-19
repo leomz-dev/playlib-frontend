@@ -1,17 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  ArcElement, 
-  PointElement, 
-  LineElement, 
-  Title, 
-  Tooltip, 
-  Legend, 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
   Filler,
   RadialLinearScale
 } from 'chart.js';
@@ -57,28 +57,40 @@ export default function Dashboard() {
     platformDistribution,
     genreDistribution,
     monthlyData,
-    topGames,
+    gamesByHours,
     loading,
     error
   } = useGameStats();
 
   // Configuración de gráficos
   const chartData = {
-    monthlyPlaytime: {
-      labels: monthlyData.map(item => item.month),
+    topGamesByHours: {
+      labels: gamesByHours?.map(item => item.name) || [],
       datasets: [
         {
-          label: 'Juegos por Mes',
-          data: monthlyData.map(item => item.count),
-          borderColor: chartColors.green,
-          backgroundColor: (context: any) => {
-            const chart = context.chart;
-            const gradient = getGradient(chart, chartColors.green.split(',0.8)')[0]);
-            return gradient || chartColors.green;
-          },
-          borderWidth: 2,
-          fill: true,
-          tension: 0.4,
+          label: 'Horas Jugadas',
+          data: gamesByHours?.map(item => item.hours) || [],
+          backgroundColor: [
+            chartColors.green,
+            chartColors.blue,
+            chartColors.yellow,
+            chartColors.orange,
+            chartColors.purple,
+            chartColors.green.replace('0.8', '0.6'),
+            chartColors.blue.replace('0.8', '0.6'),
+            chartColors.yellow.replace('0.8', '0.6'),
+          ],
+          borderColor: [
+            chartColors.green.replace('0.8', '1'),
+            chartColors.blue.replace('0.8', '1'),
+            chartColors.yellow.replace('0.8', '1'),
+            chartColors.orange.replace('0.8', '1'),
+            chartColors.purple.replace('0.8', '1'),
+            chartColors.green.replace('0.8', '1'),
+            chartColors.blue.replace('0.8', '1'),
+            chartColors.yellow.replace('0.8', '1'),
+          ],
+          borderWidth: 1,
         },
       ],
     },
@@ -87,44 +99,31 @@ export default function Dashboard() {
       datasets: [
         {
           data: platformDistribution.map(item => item.value),
-          backgroundColor: [
-            chartColors.green,
-            chartColors.blue,
-            chartColors.yellow,
-            chartColors.orange,
-            chartColors.purple,
-          ],
-          borderColor: [
-            chartColors.green.replace('0.8', '1'),
-            chartColors.blue.replace('0.8', '1'),
-            chartColors.yellow.replace('0.8', '1'),
-            chartColors.orange.replace('0.8', '1'),
-            chartColors.purple.replace('0.8', '1'),
-          ],
-          borderWidth: 1,
-        },
-      ],
-    },
-    topGames: {
-      labels: topGames.map(item => item.name),
-      datasets: [
-        {
-          label: 'Juegos Recientes',
-          data: topGames.map(item => item.hours),
-          backgroundColor: [
-            chartColors.green,
-            chartColors.blue,
-            chartColors.yellow,
-            chartColors.orange,
-            chartColors.purple,
-          ],
-          borderColor: [
-            chartColors.green.replace('0.8', '1'),
-            chartColors.blue.replace('0.8', '1'),
-            chartColors.yellow.replace('0.8', '1'),
-            chartColors.orange.replace('0.8', '1'),
-            chartColors.purple.replace('0.8', '1'),
-          ],
+          backgroundColor: platformDistribution.map((_, i) => {
+            const colors = [
+              chartColors.green,
+              chartColors.blue,
+              chartColors.yellow,
+              chartColors.orange,
+              chartColors.purple,
+              chartColors.green.replace('0.8', '0.6'),
+              chartColors.blue.replace('0.8', '0.6'),
+              chartColors.yellow.replace('0.8', '0.6'),
+              chartColors.orange.replace('0.8', '0.6'),
+              chartColors.purple.replace('0.8', '0.6'),
+            ];
+            return colors[i % colors.length];
+          }),
+          borderColor: platformDistribution.map((_, i) => {
+            const colors = [
+              chartColors.green.replace('0.8', '1'),
+              chartColors.blue.replace('0.8', '1'),
+              chartColors.yellow.replace('0.8', '1'),
+              chartColors.orange.replace('0.8', '1'),
+              chartColors.purple.replace('0.8', '1'),
+            ];
+            return colors[i % colors.length];
+          }),
           borderWidth: 1,
         },
       ],
@@ -134,18 +133,31 @@ export default function Dashboard() {
       datasets: [
         {
           data: genreDistribution.map(item => item.value),
-          backgroundColor: [
-            chartColors.green,
-            chartColors.blue,
-            chartColors.yellow,
-            chartColors.orange,
-          ],
-          borderColor: [
-            chartColors.green.replace('0.8', '1'),
-            chartColors.blue.replace('0.8', '1'),
-            chartColors.yellow.replace('0.8', '1'),
-            chartColors.orange.replace('0.8', '1'),
-          ],
+          backgroundColor: genreDistribution.map((_, i) => {
+            const colors = [
+              chartColors.green,
+              chartColors.blue,
+              chartColors.yellow,
+              chartColors.orange,
+              chartColors.purple,
+              chartColors.green.replace('0.8', '0.6'),
+              chartColors.blue.replace('0.8', '0.6'),
+              chartColors.yellow.replace('0.8', '0.6'),
+              chartColors.orange.replace('0.8', '0.6'),
+              chartColors.purple.replace('0.8', '0.6'),
+            ];
+            return colors[i % colors.length];
+          }),
+          borderColor: genreDistribution.map((_, i) => {
+            const colors = [
+              chartColors.green.replace('0.8', '1'),
+              chartColors.blue.replace('0.8', '1'),
+              chartColors.yellow.replace('0.8', '1'),
+              chartColors.orange.replace('0.8', '1'),
+              chartColors.purple.replace('0.8', '1'),
+            ];
+            return colors[i % colors.length];
+          }),
           borderWidth: 1,
         },
       ],
@@ -222,7 +234,7 @@ export default function Dashboard() {
         <div className="bg-red-900/50 border border-red-700 text-red-200 p-6 rounded-lg max-w-2xl text-center">
           <h3 className="text-xl font-bold mb-2">Error al cargar las estadísticas</h3>
           <p className="mb-4">{error}</p>
-          <button 
+          <button
             onClick={() => window.location.reload()}
             className="px-4 py-2 bg-red-700 hover:bg-red-600 rounded-md text-white transition-colors"
           >
@@ -243,42 +255,46 @@ export default function Dashboard() {
           <p className="text-gray-300">Visualiza y analiza tu actividad de juego</p>
         </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard 
-              title="Total de Juegos" 
-              value={totalGames} 
-              icon="🎮" 
-              color="from-red-600 to-red-800" 
-            />
-            <StatCard 
-              title="Juegos Completados" 
-              value={completedGames} 
-              icon="✅" 
-              color="from-green-600 to-green-800" 
-            />
-            <StatCard 
-              title="Tasa de Finalización" 
-              value={`${completionRate.toFixed(1)}%`} 
-              icon="🏆" 
-              color="from-yellow-600 to-yellow-800" 
-            />
-            <StatCard 
-              title="Juegos por Plataforma" 
-              value={platformDistribution.length} 
-              icon="🎯" 
-              color="from-purple-600 to-purple-800" 
-            />
-          </div>
-        {/* Gráfico de Línea - Horas Jugadas por Mes */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatCard
+            title="Total de Juegos"
+            value={totalGames}
+            icon="🎮"
+            color="from-red-600 to-red-800"
+          />
+          <StatCard
+            title="Juegos Completados"
+            value={completedGames}
+            icon="✅"
+            color="from-green-600 to-green-800"
+          />
+          <StatCard
+            title="Tasa de Finalización"
+            value={`${completionRate.toFixed(1)}%`}
+            icon="🏆"
+            color="from-yellow-600 to-yellow-800"
+          />
+          <StatCard
+            title="Juegos por Plataforma"
+            value={platformDistribution.length}
+            icon="🎯"
+            color="from-purple-600 to-purple-800"
+          />
+        </div>
+        {/* Gráfico de Barras - Juegos Más Jugados */}
         <div className="backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6 shadow-[0_0_40px_rgba(220,38,38,0.2)] hover:shadow-[0_0_60px_rgba(220,38,38,0.3)] transition-all duration-300 mb-8">
-          <h3 className="text-xl font-bold mb-4 text-red-400">Horas Jugadas por Mes</h3>
+          <h3 className="text-xl font-bold mb-4 text-red-400">Juegos Más Jugados</h3>
           <div className="h-80">
-            {isClient && (
-              <Line
-                ref={chartRefs.line}
-                data={chartData.monthlyPlaytime}
-                options={chartOptionsCustomized.line}
+            {isClient && gamesByHours && gamesByHours.length > 0 ? (
+              <Bar
+                ref={chartRefs.bar}
+                data={chartData.topGamesByHours}
+                options={chartOptionsCustomized.bar}
               />
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-400">No hay datos de horas jugadas disponibles</p>
+              </div>
             )}
           </div>
         </div>
@@ -304,12 +320,12 @@ export default function Dashboard() {
                         tooltip: {
                           ...chartOptions.plugins?.tooltip,
                           callbacks: {
-                            label: function(context: any) {
+                            label: function (context: any) {
                               const label = context.label || '';
                               const value = context.raw || 0;
                               const total = context.dataset.data.reduce((a: number, b: number) => a + b, 0);
                               const percentage = Math.round((value / total) * 100);
-                              return `${label}: ${value}% (${percentage}%)`;
+                              return `${label}: ${value} juegos (${percentage}%)`;
                             }
                           }
                         }

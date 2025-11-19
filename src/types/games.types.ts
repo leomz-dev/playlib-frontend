@@ -5,6 +5,16 @@ export interface GameByHours {
   year: number;
 }
 
+export interface DashboardGame {
+  titulo: string;
+  plataforma: string | string[];
+  genero: string | string[];
+  año: number;
+  completado: string;
+  fecha: string;
+  horasJugadas: number;
+}
+
 export interface GameStat {
   totalGames: number;
   completedGames: number;
@@ -12,7 +22,7 @@ export interface GameStat {
   platformDistribution: Array<{ name: string; value: number }>;
   genreDistribution: Array<{ name: string; value: number }>;
   monthlyData: Array<{ month: string; count: number }>;
-  topGames: Array<{ name: string; hours: number; year: number }>;
+  topGames: DashboardGame[];
   gamesByHours: GameByHours[];
 }
 
@@ -24,12 +34,13 @@ export interface GameStatsState extends GameStat {
 export interface Game {
   _id: string;
   titulo: string;
-  genero: string;
-  plataforma: string;
+  genero: string | string[];
+  plataforma: string | string[];
   añoLanzamiento: number;
   desarrollador: string;
   imagenPortada?: string;
   descripcion?: string;
   completado: boolean;
   fechaCreacion: string;
+  horasJugadas?: number;
 }

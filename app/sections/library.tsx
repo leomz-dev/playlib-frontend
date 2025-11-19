@@ -30,12 +30,20 @@ export default function GameLibrary() {
 
   // Get unique values for filter options
   const uniqueGenres = useMemo(() => {
-    const genres = new Set(games.map(game => game.genero));
+    const genres = new Set<string>();
+    games.forEach(game => {
+      const genreArray = Array.isArray(game.genero) ? game.genero : [game.genero];
+      genreArray.forEach(g => genres.add(g));
+    });
     return Array.from(genres).sort();
   }, [games]);
 
   const uniquePlatforms = useMemo(() => {
-    const platforms = new Set(games.map(game => game.plataforma));
+    const platforms = new Set<string>();
+    games.forEach(game => {
+      const platformArray = Array.isArray(game.plataforma) ? game.plataforma : [game.plataforma];
+      platformArray.forEach(p => platforms.add(p));
+    });
     return Array.from(platforms).sort();
   }, [games]);
 
@@ -93,10 +101,12 @@ export default function GameLibrary() {
                           game.descripcion?.toLowerCase().includes(filters.searchTerm.toLowerCase());
       
       // Genre filter
-      const matchesGenre = !filters.genero || game.genero === filters.genero;
+      const genreArray = Array.isArray(game.genero) ? game.genero : [game.genero];
+      const matchesGenre = !filters.genero || genreArray.includes(filters.genero);
       
       // Platform filter
-      const matchesPlatform = !filters.plataforma || game.plataforma === filters.plataforma;
+      const platformArray = Array.isArray(game.plataforma) ? game.plataforma : [game.plataforma];
+      const matchesPlatform = !filters.plataforma || platformArray.includes(filters.plataforma);
       
       return matchesSearch && matchesGenre && matchesPlatform;
     });
@@ -191,8 +201,8 @@ export default function GameLibrary() {
                 className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
               >
                 <option value="">Todos los géneros</option>
-                {uniqueGenres.map(genre => (
-                  <option key={genre} value={genre}>
+                {uniqueGenres.map((genre, index) => (
+                  <option key={`genre-filter-${index}-${genre}`} value={genre}>
                     {genre}
                   </option>
                 ))}
@@ -212,8 +222,8 @@ export default function GameLibrary() {
                 className="w-full px-4 py-3 bg-black/40 backdrop-blur-md border border-red-500/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all"
               >
                 <option value="">Todas las plataformas</option>
-                {uniquePlatforms.map(platform => (
-                  <option key={platform} value={platform}>
+                {uniquePlatforms.map((platform, index) => (
+                  <option key={`platform-filter-${index}-${platform}`} value={platform}>
                     {platform}
                   </option>
                 ))}
@@ -253,8 +263,6 @@ export default function GameLibrary() {
                 <GameCard
                   key={game._id}
                   {...game}
-                  onDelete={handleDelete}
-                  onRatingChange={handleRatingChange}
                 />
               ))
             ) : (

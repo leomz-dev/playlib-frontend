@@ -179,7 +179,7 @@ export const getGameStats = async (): Promise<GameStats> => {
 
 export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' | 'juegoId' | 'fechaCreacion'>): Promise<Reseña> => {
   try {
-    const response = await fetch(`${API_URL}/${juegoId}/reseñas`, {
+    const response = await fetch(`${API_URL}/${juegoId}/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reseña)
@@ -193,7 +193,7 @@ export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' |
 
 export const getReseñas = async (juegoId: string): Promise<Reseña[]> => {
   try {
-    const response = await fetch(`${API_URL}/${juegoId}/reseñas`, {
+    const response = await fetch(`${API_URL}/${juegoId}/reviews`, {
       cache: 'no-store'
     });
     

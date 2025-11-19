@@ -3,16 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
-import { Star, Clock, Calendar, Play, Trash2 } from 'lucide-react';
-import { Icon } from '@iconify/react';
+import { Star, Clock, Trophy } from 'lucide-react';
 import { Game } from '../services/gameService';
-import { rateGame } from '../services/gameService';
 
-interface GameCardProps extends Omit<Game, 'fechaCreacion' | 'completado' | 'reseñas'> {
-  calificaciones?: number[];
-  onRatingChange?: (id: string, rating: number) => void;
-  onDelete?: (id: string) => void;
-  showActions?: boolean;
+interface GameCardProps extends Omit<Game, 'fechaCreacion' | 'reseñas'> {
+  reseñas?: Array<{ calificaciones?: number }>;
 }
 
 export default function GameCard({
@@ -22,31 +17,27 @@ export default function GameCard({
   plataforma,
   imagenPortada,
   horasJugadas = 0,
-  calificacion = 0,
-  calificaciones = [],
   añoLanzamiento,
   desarrollador,
   descripcion,
-  onRatingChange,
-  onDelete,
-  showActions = true,
+  completado,
+  reseñas = [],
 }: GameCardProps) {
-  const [hoverRating, setHoverRating] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Calculate average rating from calificaciones array or use calificacion as fallback
-  const calculateAverageRating = (ratings: number[] = []) => {
-    if (!ratings || ratings.length === 0) return 0;
-    const sum = ratings.reduce((acc, curr) => acc + curr, 0);
-    return sum / ratings.length;
+  // Calculate average rating from reviews
+  const calculateAverageRating = () => {
+    if (!reseñas || reseñas.length === 0) return 0;
+    const validRatings = reseñas
+      .map(r => r.calificaciones)
+      .filter((rating): rating is number => typeof rating === 'number' && rating > 0);
+
+    if (validRatings.length === 0) return 0;
+    const sum = validRatings.reduce((acc, curr) => acc + curr, 0);
+    return sum / validRatings.length;
   };
 
-  // Use the average of calificaciones if available, otherwise use calificacion
-  const averageRating = calificaciones && calificaciones.length > 0 
-    ? calculateAverageRating(calificaciones)
-    : calificacion || 0;
+  const averageRating = calculateAverageRating();
 
   // Función segura para formatear números
   const formatNumber = (value: any, decimals: number = 1): string => {
@@ -54,175 +45,146 @@ export default function GameCard({
     return isNaN(num) ? '0' : num.toFixed(decimals);
   };
 
-  // Normalizar genero y plataforma a arrays
+  // Normalizar genero a array
   const generosArray = Array.isArray(genero) ? genero : [genero];
-  const plataformasArray = Array.isArray(plataforma) ? plataforma : [plataforma];
-  const primeraPlataforma = plataformasArray[0] || "PC";
 
-  // Función para obtener el estilo y el ícono según la plataforma
-  const getPlatformStyles = (platform: string) => {
-    const platformLower = platform.toLowerCase();
-    
-    if (platformLower.includes('playstation')) {
-      return {
-        bgColor: 'bg-orange-500',
-        textColor: 'text-white',
-        icon: <Icon icon="tabler:device-gamepad-2" width="16" height="16" className="text-white" />
-      };
-    }
-    if (platformLower.includes('xbox')) {
-      return {
-        bgColor: 'bg-green-600',
-        textColor: 'text-white',
-        icon: <Icon icon="tabler:brand-xbox" width="16" height="16" className="text-white" />
-      };
-    }
-    if (platformLower.includes('nintendo') || platformLower.includes('switch')) {
-      return {
-        bgColor: 'bg-red-500',
-        textColor: 'text-white',
-        icon: <Icon icon="tabler:device-nintendo" width="16" height="16" className="text-white" />
-      };
-    }
-    if (platformLower.includes('mobile') || platformLower.includes('android') || platformLower.includes('ios')) {
-      return {
-        bgColor: 'bg-green-500',
-        textColor: 'text-white',
-        icon: <Icon icon="tabler:device-mobile" width="16" height="16" className="text-white" />
-      };
-    }
-    // Por defecto (PC/Windows/Linux)
-    return {
-      bgColor: 'bg-blue-500',
-      textColor: 'text-white',
-      icon: <Icon icon="tabler:devices-pc" width="16" height="16" className="text-white" />
-    };
+  // Función para obtener el color de fondo según el género
+  const getGenreColor = (genre: string) => {
+    const genreLower = genre.toLowerCase();
+
+    if (genreLower.includes('acción') || genreLower.includes('action')) return 'from-red-500/30 to-red-600/30';
+    if (genreLower.includes('aventura') || genreLower.includes('adventure')) return 'from-orange-500/30 to-orange-600/30';
+    if (genreLower.includes('rpg') || genreLower.includes('rol')) return 'from-purple-500/30 to-purple-600/30';
+    if (genreLower.includes('estrategia') || genreLower.includes('strategy')) return 'from-blue-500/30 to-blue-600/30';
+    if (genreLower.includes('deporte') || genreLower.includes('sport')) return 'from-green-500/30 to-green-600/30';
+    if (genreLower.includes('simulación') || genreLower.includes('simulation')) return 'from-cyan-500/30 to-cyan-600/30';
+    if (genreLower.includes('puzzle') || genreLower.includes('rompecabezas')) return 'from-yellow-500/30 to-yellow-600/30';
+    if (genreLower.includes('horror') || genreLower.includes('terror')) return 'from-gray-500/30 to-gray-900/30';
+    if (genreLower.includes('shooter') || genreLower.includes('disparos')) return 'from-red-600/30 to-orange-600/30';
+    if (genreLower.includes('plataforma') || genreLower.includes('platform')) return 'from-pink-500/30 to-pink-600/30';
+
+    return 'from-gray-500/30 to-gray-600/30';
   };
-  
-  const platformStyles = getPlatformStyles(primeraPlataforma);
-  
+
+  const getGenreTextColor = (genre: string) => {
+    const genreLower = genre.toLowerCase();
+
+    if (genreLower.includes('acción') || genreLower.includes('action')) return 'text-red-300';
+    if (genreLower.includes('aventura') || genreLower.includes('adventure')) return 'text-orange-300';
+    if (genreLower.includes('rpg') || genreLower.includes('rol')) return 'text-purple-300';
+    if (genreLower.includes('estrategia') || genreLower.includes('strategy')) return 'text-blue-300';
+    if (genreLower.includes('deporte') || genreLower.includes('sport')) return 'text-green-300';
+    if (genreLower.includes('simulación') || genreLower.includes('simulation')) return 'text-cyan-300';
+    if (genreLower.includes('puzzle') || genreLower.includes('rompecabezas')) return 'text-yellow-300';
+    if (genreLower.includes('horror') || genreLower.includes('terror')) return 'text-gray-300';
+    if (genreLower.includes('shooter') || genreLower.includes('disparos')) return 'text-orange-300';
+    if (genreLower.includes('plataforma') || genreLower.includes('platform')) return 'text-pink-300';
+
+    return 'text-gray-300';
+  };
+
   // Valores formateados seguros
   const formattedCalificacion = formatNumber(averageRating);
   const formattedHorasJugadas = formatNumber(horasJugadas, 0);
-  const formattedAñoLanzamiento = añoLanzamiento ? añoLanzamiento.toString() : 'N/A';
-
-  const handleRating = async (rating: number) => {
-    if (!_id || isLoading) return;
-    
-    // Validación simple de rating
-    const safeRating = Math.max(0, Math.min(5, rating || 0));
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      await rateGame(_id, safeRating);
-      onRatingChange?.(_id, safeRating);
-    } catch (err) {
-      console.error('Error al calificar el juego:', err);
-      setError('Error al calificar el juego. Inténtalo de nuevo.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = () => {
-    if (!_id || !onDelete) return;
-    if (window.confirm(`¿Estás seguro de que deseas eliminar "${titulo}"?`)) {
-      onDelete(_id);
-    }
-  };
+  const totalReviews = reseñas?.length || 0;
 
   return (
-    <div 
-      className={`relative backdrop-blur-xl bg-black/40 border border-red-500/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)] hover:shadow-[0_0_50px_rgba(220,38,38,0.5)] transition-all duration-300 transform ${isHovered ? 'scale-105 -translate-y-2 border-red-500/60' : 'scale-100'}`}
+    <Link
+      href={`/game/${_id}`}
+      className="block group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Game Image with Gradient Overlay */}
-      <div className="relative h-48 bg-gray-800 overflow-hidden">
-        {imagenPortada ? (
-          <>
-            <Image
-              src={imagenPortada}
-              alt={titulo}
-              fill
-              className="object-cover transition-all duration-500"
-              style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
-          </>
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-black/60 to-black/80 flex items-center justify-center">
-            {platformStyles.icon}
+      <div className={`relative backdrop-blur-md bg-white/5 border rounded-xl overflow-hidden transition-all duration-300 ${isHovered ? 'scale-[1.02] -translate-y-1 border-white/20 shadow-xl' : 'border-white/10 shadow-lg'}`}>
+        {/* Game Image with Gradient Overlay */}
+        <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+          {imagenPortada ? (
+            <>
+              <Image
+                src={imagenPortada}
+                alt={titulo}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-300"
+                style={{
+                  transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+            </>
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+              <div className="text-4xl text-gray-600">🎮</div>
+            </div>
+          )}
+
+          {/* Completed Badge - Simple Icon */}
+          {completado && (
+            <div className="absolute top-3 left-3 z-10">
+              <div className="w-8 h-8 rounded-full backdrop-blur-md bg-green-500/20 border border-green-400/40 flex items-center justify-center shadow-lg">
+                <Trophy className="w-4 h-4 text-green-400" />
+              </div>
+            </div>
+          )}
+
+          {/* Rating Badge */}
+          {averageRating > 0 && (
+            <div className="absolute top-3 right-3 z-10">
+              <div className="flex items-center gap-1.5 backdrop-blur-md bg-black/40 border border-yellow-400/30 px-2.5 py-1 rounded-lg shadow-lg">
+                <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+                <span className="text-sm font-semibold text-white">{formattedCalificacion}</span>
+                {totalReviews > 0 && (
+                  <span className="text-xs text-gray-400">({totalReviews})</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Game Info */}
+        <div className="p-5">
+          {/* Title */}
+          <h3 className="font-bold text-xl text-white mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
+            {titulo}
+          </h3>
+
+          {/* Developer & Year */}
+          <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+            <span>{desarrollador}</span>
+            <span>•</span>
+            <span>{añoLanzamiento}</span>
           </div>
-        )}
-        
-        {/* Platform Badge */}
-        <div className="absolute top-3 left-3 z-10">
-          <div className={`flex items-center px-3 py-1 rounded-full ${platformStyles.bgColor} ${platformStyles.textColor} shadow-lg backdrop-blur-md`}>
-            {platformStyles.icon}
-            <span className="ml-1 text-xs font-semibold">{primeraPlataforma}</span>
-            {plataformasArray.length > 1 && (
-              <span className="ml-1 text-xs">+{plataformasArray.length - 1}</span>
+
+          {/* Hours Played */}
+          {horasJugadas > 0 && (
+            <div className="flex items-center gap-1.5 text-sm text-gray-300 mb-4">
+              <Clock className="w-4 h-4" />
+              <span className="font-medium">{formattedHorasJugadas}h jugadas</span>
+            </div>
+          )}
+
+          {/* Genre Tags - Minimalist with Glassmorphism */}
+          <div className="flex flex-wrap gap-2">
+            {generosArray.slice(0, 3).map((g, i) => {
+              const colorClass = getGenreColor(g);
+              const textColor = getGenreTextColor(g);
+              return (
+                <span
+                  key={`${_id}-genre-${i}-${g}`}
+                  className={`px-3 py-1 backdrop-blur-md bg-gradient-to-r ${colorClass} border border-white/10 ${textColor} text-xs font-medium rounded-md`}
+                >
+                  {typeof g === 'string' ? g.trim() : g}
+                </span>
+              );
+            })}
+            {generosArray.length > 3 && (
+              <span className="px-3 py-1 backdrop-blur-md bg-white/5 border border-white/10 text-gray-400 text-xs font-medium rounded-md">
+                +{generosArray.length - 3}
+              </span>
             )}
           </div>
         </div>
-        
-        {/* Rating Badge */}
-        <div className="absolute top-3 right-3 z-10 flex items-center bg-black/60 backdrop-blur-md border border-yellow-500/30 px-2 py-1 rounded-full shadow-[0_0_15px_rgba(234,179,8,0.3)]">
-          <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-          <span className="ml-1 text-sm font-semibold text-white">{formattedCalificacion}</span>
-        </div>
       </div>
-      
-      {/* Game Info */}
-      <div className="p-5">
-        <div className="mb-3">
-          <h3 className="font-bold text-xl text-white mb-1 line-clamp-1">{titulo}</h3>
-          <div className="flex items-center text-sm text-gray-400">
-            <Calendar className="w-4 h-4 mr-1" />
-            <span>{formattedAñoLanzamiento}</span>
-            <span className="mx-2">•</span>
-            <Clock className="w-4 h-4 mr-1" />
-            <span>{formattedHorasJugadas}h</span>
-          </div>
-        </div>
-        
-        {/* Genre Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {generosArray.map((g, i) => (
-            <span key={i} className="px-3 py-1 bg-red-500/20 border border-red-500/30 text-red-300 text-xs rounded-full backdrop-blur-sm">
-              {typeof g === 'string' ? g.trim() : g}
-            </span>
-          ))}
-        </div>
-        
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-red-500/20">
-          <Link 
-            href={`/game/${_id}`}
-            className="flex-1 mr-2 px-4 py-2.5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white rounded-xl text-sm font-semibold text-center transition-all duration-300 flex items-center justify-center shadow-[0_0_15px_rgba(220,38,38,0.3)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)]"
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Ver más
-          </Link>
-          
-          {showActions && onDelete && (
-            <button 
-              onClick={handleDelete}
-              className="p-2.5 text-gray-400 hover:text-red-400 transition-colors rounded-xl hover:bg-red-500/20 backdrop-blur-sm border border-transparent hover:border-red-500/30"
-              title="Eliminar juego"
-            >
-              <Trash2 className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-        
-        {error && (
-          <div className="mt-2 text-red-400 text-sm">{error}</div>
-        )}
-      </div>
-    </div>
+    </Link>
   );
 }
