@@ -1,7 +1,9 @@
+// Importación de secciones de la página principal
 import Nav from "./sections/nav";
 import Hero from "./sections/hero";
 import Dashboard from "./sections/dashboard";
 import Library from "./sections/library";
+// Componente de fondo animado
 import Waves from "./components/Waves";
 
 export default function Home() {
@@ -27,7 +29,7 @@ export default function Home() {
       {/* Gradiente overlay sutil para profundidad sin oscurecer las waves */}
       <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
 
-      {/* Contenido con relative positioning */}
+      {/* Contenido principal con posicionamiento relativo para estar sobre el fondo */}
       <div className="relative z-10">
         <Nav />
         <section id="hero">

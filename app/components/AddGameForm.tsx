@@ -3,7 +3,9 @@
 import React, { useState } from 'react';
 import { createGame } from '../services/gameService';
 
+// Componente de formulario para agregar un nuevo juego
 export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void }) {
+  // Estado inicial del formulario
   const [formData, setFormData] = useState({
     titulo: '',
     genero: [] as string[],
@@ -19,6 +21,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
+  // Manejador genérico para cambios en inputs de texto y checkbox simples
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
     const checked = (e.target as HTMLInputElement).checked;
@@ -29,6 +32,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
     }));
   };
 
+  // Manejador para campos de selección múltiple (géneros y plataformas)
   const handleArrayChange = (name: 'genero' | 'plataforma', value: string, checked: boolean) => {
     setFormData(prev => {
       const currentArray = prev[name];
@@ -45,6 +49,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
     });
   };
 
+  // Envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -62,7 +67,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
         onGameAdded();
       }
 
-      // Reset form
+      // Reiniciar formulario tras éxito
       setFormData({
         titulo: '',
         genero: [],

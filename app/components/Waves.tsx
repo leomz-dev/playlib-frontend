@@ -135,6 +135,8 @@ interface WavesProps {
   className?: string;
 }
 
+// Componente de fondo animado con ondas usando ruido Perlin
+// Basado en canvas para alto rendimiento
 const Waves: React.FC<WavesProps> = ({
   lineColor = 'black',
   backgroundColor = 'transparent',
@@ -194,6 +196,7 @@ const Waves: React.FC<WavesProps> = ({
 
   const frameIdRef = useRef<number | null>(null);
 
+  // Actualizar configuración cuando cambian las props
   useEffect(() => {
     configRef.current = {
       lineColor,
@@ -209,12 +212,14 @@ const Waves: React.FC<WavesProps> = ({
     };
   }, [lineColor, waveSpeedX, waveSpeedY, waveAmpX, waveAmpY, friction, tension, maxCursorMove, xGap, yGap]);
 
+  // Inicialización del canvas y bucle de animación
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
     if (!canvas || !container) return;
     ctxRef.current = canvas.getContext('2d');
 
+    // Ajustar tamaño del canvas al contenedor
     function setSize() {
       if (!container || !canvas) return;
       const rect = container.getBoundingClientRect();
@@ -228,6 +233,7 @@ const Waves: React.FC<WavesProps> = ({
       canvas.height = rect.height;
     }
 
+    // Inicializar puntos de las líneas
     function setLines() {
       const { width, height } = boundingRef.current;
       linesRef.current = [];
@@ -252,6 +258,7 @@ const Waves: React.FC<WavesProps> = ({
       }
     }
 
+    // Calcular movimiento de puntos basado en ruido y cursor
     function movePoints(time: number) {
       const lines = linesRef.current;
       const mouse = mouseRef.current;
@@ -292,6 +299,7 @@ const Waves: React.FC<WavesProps> = ({
       return { x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 };
     }
 
+    // Dibujar líneas en el canvas
     function drawLines() {
       const { width, height } = boundingRef.current;
       const ctx = ctxRef.current;
@@ -314,6 +322,7 @@ const Waves: React.FC<WavesProps> = ({
       ctx.stroke();
     }
 
+    // Loop de animación principal
     function tick(t: number) {
       if (!container) return;
       const mouse = mouseRef.current;

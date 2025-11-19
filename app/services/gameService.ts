@@ -1,4 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
+const API_URL = process.env.NODE_ENV === 'production'
+  ? 'https://playlib-backend.onrender.com/api/juegos'
+  : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos');
 
 export interface Reseña {
   _id?: string;
@@ -41,30 +43,30 @@ interface GameStats {
 const handleResponse = async <T>(response: Response): Promise<T> => {
   const responseText = await response.text();
   let data: any;
-  
+
   try {
     data = responseText ? JSON.parse(responseText) : {};
   } catch (e) {
     console.error('Failed to parse response as JSON:', responseText);
     throw new Error(`Invalid server response: ${response.status} ${response.statusText}. Response: ${responseText.substring(0, 200)}`);
   }
-  
+
   if (!response.ok) {
-    const errorMessage = data?.message || 
-                       data?.error?.message || 
-                       data?.error ||
-                       `Error (${response.status} ${response.statusText})`;
-    
+    const errorMessage = data?.message ||
+      data?.error?.message ||
+      data?.error ||
+      `Error (${response.status} ${response.statusText})`;
+
     console.error('Error response:', {
       status: response.status,
       statusText: response.statusText,
       data: data,
       headers: Object.fromEntries(response.headers.entries())
     });
-    
+
     throw new Error(errorMessage);
   }
-  
+
   return data.data || data;
 };
 
@@ -86,7 +88,7 @@ export const getGames = async (): Promise<Game[]> => {
       headers: { 'Accept': 'application/json' },
       cache: 'no-store'
     });
-    
+
     const data = await handleResponse<Game[]>(response);
     return data.map(game => ({
       ...game,
@@ -105,7 +107,7 @@ export const getGame = async (id: string): Promise<Game> => {
     const response = await fetch(`${API_URL}/${id}`, {
       cache: 'no-store'
     });
-    
+
     const game = await handleResponse<Game>(response);
     return {
       ...game,
@@ -126,7 +128,7 @@ export const createGame = async (game: Omit<Game, '_id'>): Promise<Game> => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(game)
     });
-    
+
     return handleResponse<Game>(response);
   } catch (error) {
     return handleNetworkError(error, 'Error al crear el juego');
@@ -140,7 +142,7 @@ export const updateGame = async (id: string, game: Partial<Game>): Promise<Game>
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(game)
     });
-    
+
     return handleResponse<Game>(response);
   } catch (error) {
     return handleNetworkError(error, `Error al actualizar el juego con ID: ${id}`);
@@ -152,7 +154,7 @@ export const deleteGame = async (id: string): Promise<void> => {
     const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE'
     });
-    
+
     if (!response.ok) {
       await handleResponse<void>(response);
     }
@@ -170,7 +172,7 @@ export const getGameStats = async (): Promise<GameStats> => {
     const response = await fetch(`${API_URL}/stats`, {
       cache: 'no-store'
     });
-    
+
     return handleResponse<GameStats>(response);
   } catch (error) {
     return handleNetworkError(error, 'Error al obtener las estadísticas de los juegos');
@@ -184,7 +186,7 @@ export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' |
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reseña)
     });
-    
+
     return handleResponse<Reseña>(response);
   } catch (error) {
     return handleNetworkError(error, 'Error al agregar la reseña');
@@ -196,7 +198,7 @@ export const getReseñas = async (juegoId: string): Promise<Reseña[]> => {
     const response = await fetch(`${API_URL}/${juegoId}/reviews`, {
       cache: 'no-store'
     });
-    
+
     return handleResponse<Reseña[]>(response);
   } catch (error) {
     return handleNetworkError(error, 'Error al obtener las reseñas');

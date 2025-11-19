@@ -6,10 +6,13 @@ import { useState } from 'react';
 import { Star, Clock, Trophy } from 'lucide-react';
 import { Game } from '../services/gameService';
 
+// Interfaz para las propiedades de la tarjeta de juego
+// Extiende la interfaz Game pero omite fechaCreacion y redefine reseñas
 interface GameCardProps extends Omit<Game, 'fechaCreacion' | 'reseñas'> {
   reseñas?: Array<{ calificaciones?: number }>;
 }
 
+// Componente de tarjeta para mostrar un juego individual en la lista
 export default function GameCard({
   _id,
   titulo,
@@ -25,7 +28,7 @@ export default function GameCard({
 }: GameCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
-  // Calculate average rating from reviews
+  // Calcular calificación promedio basada en las reseñas
   const calculateAverageRating = () => {
     if (!reseñas || reseñas.length === 0) return 0;
     const validRatings = reseñas

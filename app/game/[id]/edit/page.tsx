@@ -4,20 +4,24 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Game, getGame, updateGame } from '../../../services/gameService';
 
+// Componente para editar un juego existente
 export default function EditGamePage() {
   const { id } = useParams();
   const router = useRouter();
+
+  // Estados del formulario
   const [formData, setFormData] = useState<Partial<Game>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Cargar datos iniciales del juego
   useEffect(() => {
     if (id) {
       const fetchGame = async () => {
         try {
           const game = await getGame(id as string);
-          // Normalize genres and platforms to arrays if they are strings
+          // Normalizar géneros y plataformas a arrays si son strings
           setFormData({
             ...game,
             genero: Array.isArray(game.genero) ? game.genero : (game.genero ? [game.genero] : []),
@@ -33,6 +37,7 @@ export default function EditGamePage() {
     }
   }, [id]);
 
+  // Manejador genérico para cambios en inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
     const checked = (e.target as HTMLInputElement).checked;
@@ -43,6 +48,7 @@ export default function EditGamePage() {
     }));
   };
 
+  // Manejador específico para arrays (géneros y plataformas)
   const handleArrayChange = (name: 'genero' | 'plataforma', value: string, checked: boolean) => {
     setFormData(prev => {
       const currentArray = (prev[name] as string[]) || [];
@@ -59,6 +65,7 @@ export default function EditGamePage() {
     });
   };
 
+  // Enviar formulario actualizado
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!id) return;
