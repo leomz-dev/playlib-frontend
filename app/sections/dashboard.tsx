@@ -249,7 +249,7 @@ export default function Dashboard() {
     <div className="min-h-screen text-white p-4 md:p-8 py-20">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8 backdrop-blur-xl bg-black/20 border border-red-500/20 rounded-2xl p-6">
-          <h2 className="text-4xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+          <h2 className="text-4xl md:text-5xl font-bold mb-2 text-transparent bg-clip-text bg-linear-to-r from-red-500 via-red-600 to-red-700 drop-shadow-[0_0_20px_rgba(220,38,38,0.5)]">
             Estadísticas de Juegos
           </h2>
           <p className="text-gray-300">Visualiza y analiza tu actividad de juego</p>
@@ -365,7 +365,7 @@ const StatCard = ({ title, value, icon, color }: { title: string; value: string 
         <p className="text-gray-300 text-sm font-medium">{title}</p>
         <h3 className="text-3xl font-bold text-white mt-2 group-hover:text-red-400 transition-colors">{value}</h3>
       </div>
-      <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform`}>
+      <div className={`w-14 h-14 rounded-full bg-linear-to-br ${color} flex items-center justify-center text-2xl shadow-lg group-hover:scale-110 transition-transform`}>
         {icon}
       </div>
     </div>

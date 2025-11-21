@@ -109,7 +109,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 backdrop-blur-xl bg-black/40 border border-red-500/30 p-8 rounded-2xl shadow-[0_0_40px_rgba(220,38,38,0.2)]">
-      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-red-600 to-red-700 mb-6">Agregar Nuevo Juego</h2>
+      <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-red-500 via-red-600 to-red-700 mb-6">Agregar Nuevo Juego</h2>
 
       {error && (
         <div className="p-4 backdrop-blur-md bg-red-500/20 border border-red-500/50 text-red-200 rounded-xl shadow-[0_0_20px_rgba(220,38,38,0.3)]">
@@ -323,7 +323,7 @@ export default function AddGameForm({ onGameAdded }: { onGameAdded?: () => void 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="px-8 py-3 text-sm font-semibold text-white bg-gradient-to-r from-red-600 to-red-700 rounded-xl hover:from-red-500 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-8 py-3 text-sm font-semibold text-white bg-linear-to-r from-red-600 to-red-700 rounded-xl hover:from-red-500 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-[0_0_20px_rgba(220,38,38,0.4)] hover:shadow-[0_0_30px_rgba(220,38,38,0.6)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Agregando...' : 'Agregar Juego'}
         </button>
