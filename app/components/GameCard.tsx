@@ -98,61 +98,60 @@ export default function GameCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`relative backdrop-blur-md bg-white/5 border rounded-xl overflow-hidden transition-all duration-300 ${isHovered ? 'scale-[1.02] -translate-y-1 border-white/20 shadow-xl' : 'border-white/10 shadow-lg'}`}>
-        {/* Game Image with Gradient Overlay */}
-        <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
-          {imagenPortada ? (
-            <>
-              <Image
-                src={imagenPortada}
-                alt={titulo}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                className="object-cover transition-transform duration-300"
-                style={{
-                  transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            </>
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-              <div className="text-4xl text-gray-600">🎮</div>
-            </div>
-          )}
+      <div className={`relative border rounded-xl overflow-hidden transition-all duration-300 h-80 ${isHovered ? 'scale-[1.02] -translate-y-1 border-white/20 shadow-xl' : 'border-white/10 shadow-lg'}`}>
+        {/* Background Image - Full Card */}
+        {imagenPortada ? (
+          <>
+            <Image
+              src={imagenPortada}
+              alt={titulo}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300"
+              style={{
+                transform: isHovered ? 'scale(1.05)' : 'scale(1)'
+              }}
+            />
+            {/* Gradient overlay para mejor legibilidad */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+            <div className="text-6xl text-gray-600">🎮</div>
+          </div>
+        )}
 
-          {/* Completed Badge - Simple Icon */}
-          {completado && (
-            <div className="absolute top-3 left-3 z-10">
-              <div className="w-8 h-8 rounded-full backdrop-blur-md bg-green-500/20 border border-green-400/40 flex items-center justify-center shadow-lg">
-                <Trophy className="w-4 h-4 text-green-400" />
-              </div>
+        {/* Completed Badge - Simple Icon */}
+        {completado && (
+          <div className="absolute top-3 left-3 z-10">
+            <div className="w-8 h-8 rounded-full backdrop-blur-md bg-green-500/20 border border-green-400/40 flex items-center justify-center shadow-lg">
+              <Trophy className="w-4 h-4 text-green-400" />
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Rating Badge */}
-          {averageRating > 0 && (
-            <div className="absolute top-3 right-3 z-10">
-              <div className="flex items-center gap-1.5 backdrop-blur-md bg-black/40 border border-yellow-400/30 px-2.5 py-1 rounded-lg shadow-lg">
-                <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
-                <span className="text-sm font-semibold text-white">{formattedCalificacion}</span>
-                {totalReviews > 0 && (
-                  <span className="text-xs text-gray-400">({totalReviews})</span>
-                )}
-              </div>
+        {/* Rating Badge */}
+        {averageRating > 0 && (
+          <div className="absolute top-3 right-3 z-10">
+            <div className="flex items-center gap-1.5 backdrop-blur-md bg-black/40 border border-yellow-400/30 px-2.5 py-1 rounded-lg shadow-lg">
+              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+              <span className="text-sm font-semibold text-white">{formattedCalificacion}</span>
+              {totalReviews > 0 && (
+                <span className="text-xs text-gray-400">({totalReviews})</span>
+              )}
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Game Info */}
-        <div className="p-5">
+        {/* Game Info - Positioned at bottom with gradient effect */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 bg-linear-to-t from-black via-black/70 to-transparent">
           {/* Title */}
           <h3 className="font-bold text-xl text-white mb-2 line-clamp-2 group-hover:text-white/90 transition-colors">
             {titulo}
           </h3>
 
           {/* Developer & Year */}
-          <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+          <div className="flex items-center gap-2 text-sm text-gray-300 mb-3">
             <span>{desarrollador}</span>
             <span>•</span>
             <span>{añoLanzamiento}</span>
@@ -160,7 +159,7 @@ export default function GameCard({
 
           {/* Hours Played */}
           {horasJugadas > 0 && (
-            <div className="flex items-center gap-1.5 text-sm text-gray-300 mb-4">
+            <div className="flex items-center gap-1.5 text-sm text-gray-200 mb-3">
               <Clock className="w-4 h-4" />
               <span className="font-medium">{formattedHorasJugadas}h jugadas</span>
             </div>
@@ -174,7 +173,7 @@ export default function GameCard({
               return (
                 <span
                   key={`${_id}-genre-${i}-${g}`}
-                  className={`px-3 py-1 backdrop-blur-md bg-gradient-to-r ${colorClass} border border-white/10 ${textColor} text-xs font-medium rounded-md`}
+                  className={`px-3 py-1 backdrop-blur-md bg-linear-to-r ${colorClass} border border-white/10 ${textColor} text-xs font-medium rounded-md`}
                 >
                   {typeof g === 'string' ? g.trim() : g}
                 </span>
