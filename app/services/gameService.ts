@@ -1,17 +1,25 @@
 const getApiUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
-    // En el cliente (navegador), usar el proxy para evitar bloqueos
-    if (typeof window !== 'undefined') {
-      return '/api/proxy/juegos';
+  // Lógica para el cliente (navegador)
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    // Si estamos en un entorno local, usar localhost
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
     }
-    // En el servidor (SSR), usar la URL directa
+    // En producción (cualquier otro dominio), usar siempre el proxy para evitar bloqueos
+    return '/api/proxy/juegos';
+  }
+
+  // Lógica para el servidor (SSR)
+  if (process.env.NODE_ENV === 'production') {
     return 'https://playlib-backend.onrender.com/api/juegos';
   }
-  // En desarrollo
+
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
 };
 
 const API_URL = getApiUrl();
+console.log('API_URL configured as:', API_URL);
 
 export interface Reseña {
   _id?: string;
