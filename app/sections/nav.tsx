@@ -23,7 +23,7 @@ export default function Navbar() {
   // Efecto para detectar scroll y sección activa usando Intersection Observer
   useEffect(() => {
     const sections = ["hero", "dashboard", "library"]
-    
+
     // Ocultar navbar en el footer
     const handleScroll = () => {
       const footer = document.querySelector("footer")
@@ -63,7 +63,7 @@ export default function Navbar() {
     // Listener para el scroll (para ocultar navbar en footer)
     window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll() // Ejecutar al montar
-    
+
     return () => {
       observer.disconnect()
       window.removeEventListener("scroll", handleScroll)
@@ -73,7 +73,7 @@ export default function Navbar() {
   // Función para navegar a una sección
   const scrollToSection = (sectionId: string, e?: React.MouseEvent) => {
     e?.preventDefault()
-    
+
     const element = document.getElementById(sectionId)
     if (element) {
       // Scroll directo a la sección
@@ -81,10 +81,10 @@ export default function Navbar() {
         behavior: 'smooth',
         block: 'start'
       })
-      
+
       // Cerrar menú móvil
       setIsMobileMenuOpen(false)
-      
+
       // Actualizar sección activa después de un pequeño delay para que el scroll se complete
       setTimeout(() => {
         setActiveSection(sectionId)
@@ -108,21 +108,21 @@ export default function Navbar() {
                 "transition-all duration-500 ease-out",
                 activeSection === item.sectionId
                   ? [
-                      "text-white font-bold tracking-wider",
-                      "bg-gradient-to-br from-red-500 via-red-600 to-red-700",
-                      "shadow-[0_0_30px_rgba(220,38,38,0.8),0_0_60px_rgba(220,38,38,0.4),inset_0_0_2px_rgba(255,255,255,0.2)]",
-                      "scale-105",
-                      "before:absolute before:inset-0 before:bg-gradient-to-t before:from-white/20 before:to-transparent before:opacity-0",
-                      "hover:before:opacity-100 before:transition-opacity before:duration-300",
-                      "after:absolute after:inset-0 after:rounded-full after:bg-gradient-to-r after:from-transparent after:via-white/30 after:to-transparent",
-                      "after:translate-x-[-200%] hover:after:translate-x-[200%] after:transition-transform after:duration-700",
-                    ].join(" ")
+                    "text-white font-bold tracking-wider",
+                    "bg-linear-to-br from-red-500 via-red-600 to-red-700",
+                    "shadow-[0_0_30px_rgba(220,38,38,0.8),0_0_60px_rgba(220,38,38,0.4),inset_0_0_2px_rgba(255,255,255,0.2)]",
+                    "scale-105",
+                    "before:absolute before:inset-0 before:bg-linear-to-t before:from-white/20 before:to-transparent before:opacity-0",
+                    "hover:before:opacity-100 before:transition-opacity before:duration-300",
+                    "after:absolute after:inset-0 after:rounded-full after:bg-linear-to-r after:from-transparent after:via-white/30 after:to-transparent",
+                    "after:translate-x-[-200%] hover:after:translate-x-[200%] after:transition-transform after:duration-700",
+                  ].join(" ")
                   : [
-                      "text-gray-300 hover:text-white",
-                      "hover:bg-white/10 hover:scale-105",
-                      "hover:shadow-lg hover:shadow-white/10",
-                      "active:scale-95"
-                    ].join(" ")
+                    "text-gray-300 hover:text-white",
+                    "hover:bg-white/10 hover:scale-105",
+                    "hover:shadow-lg hover:shadow-white/10",
+                    "active:scale-95"
+                  ].join(" ")
               )}
               aria-current={activeSection === item.sectionId ? "page" : undefined}
             >
@@ -139,7 +139,7 @@ export default function Navbar() {
       <div className="fixed bottom-8 left-0 right-0 z-50 flex md:hidden justify-center pointer-events-none">
         <button
           onClick={() => setIsMobileMenuOpen(true)}
-          className="bg-gradient-to-br from-red-500 via-red-600 to-red-700 backdrop-blur-2xl rounded-full shadow-[0_0_40px_rgba(220,38,38,0.8)] w-16 h-16 flex items-center justify-center border border-red-400/60 text-white pointer-events-auto hover:scale-110 active:scale-95 transition-all duration-300 animate-pulse"
+          className="bg-linear-to-br from-red-500 via-red-600 to-red-700 backdrop-blur-2xl rounded-full shadow-[0_0_40px_rgba(220,38,38,0.8)] w-16 h-16 flex items-center justify-center border border-red-400/60 text-white pointer-events-auto hover:scale-110 active:scale-95 transition-all duration-300 animate-pulse"
           aria-label="Abrir menú"
         >
           <Menu className="h-6 w-6" />
@@ -149,16 +149,16 @@ export default function Navbar() {
       {/* PANEL DEL MENÚ MÓVIL */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-60 flex flex-col md:hidden animate-in fade-in duration-300">
-          <div 
-            className="absolute inset-0 bg-black/70 backdrop-blur-md" 
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-md"
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
           <div className="relative z-10 mt-20 mx-auto w-[85%] max-w-md backdrop-blur-2xl bg-black/60 border border-red-500/40 rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(220,38,38,0.5)] animate-in slide-in-from-bottom-8 duration-500">
             <div className="flex flex-col">
               {navItems.map((item, index) => (
-                <div 
-                  key={item.sectionId} 
+                <div
+                  key={item.sectionId}
                   className="border-b border-white/10 last:border-b-0"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
@@ -169,19 +169,19 @@ export default function Navbar() {
                       "transition-all duration-500 ease-out",
                       activeSection === item.sectionId
                         ? [
-                            "text-white font-bold tracking-wider",
-                            "bg-gradient-to-r from-red-500/50 via-red-600/60 to-red-700/50",
-                            "border-l-4 border-red-400",
-                            "shadow-[inset_0_0_30px_rgba(220,38,38,0.4)]",
-                            "before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-500/30 before:via-transparent before:to-red-500/30",
-                            "before:animate-pulse",
-                            "after:absolute after:right-4 after:top-1/2 after:-translate-y-1/2 after:w-2 after:h-2 after:bg-red-400 after:rounded-full after:shadow-[0_0_15px_rgba(220,38,38,0.9)]",
-                          ].join(" ")
+                          "text-white font-bold tracking-wider",
+                          "bg-gradient-to-r from-red-500/50 via-red-600/60 to-red-700/50",
+                          "border-l-4 border-red-400",
+                          "shadow-[inset_0_0_30px_rgba(220,38,38,0.4)]",
+                          "before:absolute before:inset-0 before:bg-gradient-to-r before:from-red-500/30 before:via-transparent before:to-red-500/30",
+                          "before:animate-pulse",
+                          "after:absolute after:right-4 after:top-1/2 after:-translate-y-1/2 after:w-2 after:h-2 after:bg-red-400 after:rounded-full after:shadow-[0_0_15px_rgba(220,38,38,0.9)]",
+                        ].join(" ")
                         : [
-                            "text-gray-300 hover:text-white",
-                            "hover:bg-white/10 hover:pl-10",
-                            "active:scale-95"
-                          ].join(" ")
+                          "text-gray-300 hover:text-white",
+                          "hover:bg-white/10 hover:pl-10",
+                          "active:scale-95"
+                        ].join(" ")
                     )}
                     aria-current={activeSection === item.sectionId ? "page" : undefined}
                   >

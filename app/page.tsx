@@ -27,7 +27,7 @@ export default function Home() {
       </div>
 
       {/* Gradiente overlay sutil para profundidad sin oscurecer las waves */}
-      <div className="fixed inset-0 z-[1] bg-gradient-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
+      <div className="fixed inset-0 z-1 bg-linear-to-b from-black/20 via-transparent to-black/20 pointer-events-none" />
 
       {/* Contenido principal con posicionamiento relativo para estar sobre el fondo */}
       <div className="relative z-10">

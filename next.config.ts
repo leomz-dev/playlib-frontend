@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: true,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/api/proxy/:path*',
+        destination: 'https://playlib-backend.onrender.com/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;
