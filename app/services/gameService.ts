@@ -18,9 +18,6 @@ const getApiUrl = () => {
   return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
 };
 
-const API_URL = getApiUrl();
-console.log('API_URL configured as:', API_URL);
-
 export interface Reseña {
   _id?: string;
   juegoId: string;
@@ -93,7 +90,7 @@ const handleNetworkError = (error: unknown, defaultMessage: string) => {
   console.error(defaultMessage, error);
   if (error instanceof Error) {
     if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      throw new Error('No se pudo conectar con el servidor. Asegúrate de que el backend esté en ejecución y accesible en ' + API_URL);
+      throw new Error('No se pudo conectar con el servidor. Asegúrate de que el backend esté en ejecución y accesible.');
     }
     throw error;
   }
@@ -102,7 +99,7 @@ const handleNetworkError = (error: unknown, defaultMessage: string) => {
 
 export const getGames = async (): Promise<Game[]> => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(getApiUrl(), {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
       cache: 'no-store'
@@ -123,7 +120,7 @@ export const getGames = async (): Promise<Game[]> => {
 
 export const getGame = async (id: string): Promise<Game> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${getApiUrl()}/${id}`, {
       cache: 'no-store'
     });
 
@@ -142,7 +139,7 @@ export const getGame = async (id: string): Promise<Game> => {
 
 export const createGame = async (game: Omit<Game, '_id'>): Promise<Game> => {
   try {
-    const response = await fetch(API_URL, {
+    const response = await fetch(getApiUrl(), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(game)
@@ -156,7 +153,7 @@ export const createGame = async (game: Omit<Game, '_id'>): Promise<Game> => {
 
 export const updateGame = async (id: string, game: Partial<Game>): Promise<Game> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${getApiUrl()}/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(game)
@@ -170,7 +167,7 @@ export const updateGame = async (id: string, game: Partial<Game>): Promise<Game>
 
 export const deleteGame = async (id: string): Promise<void> => {
   try {
-    const response = await fetch(`${API_URL}/${id}`, {
+    const response = await fetch(`${getApiUrl()}/${id}`, {
       method: 'DELETE'
     });
 
@@ -188,7 +185,7 @@ export const rateGame = async (id: string, calificacion: number): Promise<Game> 
 
 export const getGameStats = async (): Promise<GameStats> => {
   try {
-    const response = await fetch(`${API_URL}/stats`, {
+    const response = await fetch(`${getApiUrl()}/stats`, {
       cache: 'no-store'
     });
 
@@ -200,7 +197,7 @@ export const getGameStats = async (): Promise<GameStats> => {
 
 export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' | 'juegoId' | 'fechaCreacion'>): Promise<Reseña> => {
   try {
-    const response = await fetch(`${API_URL}/${juegoId}/reviews`, {
+    const response = await fetch(`${getApiUrl()}/${juegoId}/reviews`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(reseña)
@@ -214,7 +211,7 @@ export const addReseña = async (juegoId: string, reseña: Omit<Reseña, '_id' |
 
 export const getReseñas = async (juegoId: string): Promise<Reseña[]> => {
   try {
-    const response = await fetch(`${API_URL}/${juegoId}/reviews`, {
+    const response = await fetch(`${getApiUrl()}/${juegoId}/reviews`, {
       cache: 'no-store'
     });
 
