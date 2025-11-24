@@ -1,34 +1,17 @@
+// Obtiene la URL base de la API según el entorno
 const getApiUrl = () => {
-  // Lógica para el cliente (navegador)
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    console.log('[GameService v1.2] Checking environment. Hostname:', hostname);
+  // Obtener la URL base del backend (sin /api/juegos)
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100';
 
-    // Si estamos en un entorno local, usar localhost
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      console.log('[GameService] Detected local environment. Using localhost.');
-      return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
-    }
+  // Construir la URL completa agregando /api/juegos
+  const apiUrl = `${baseUrl}/api/juegos`;
 
-    // Si estamos en Vercel, FORZAR el proxy
-    if (hostname.includes('vercel.app')) {
-      console.log('[GameService] Detected Vercel environment. Forcing proxy.');
-      return '/api/proxy/juegos';
-    }
-
-    // En producción (cualquier otro dominio), usar siempre el proxy para evitar bloqueos
-    console.log('[GameService] Detected production environment. Using proxy.');
-    return '/api/proxy/juegos';
+  // Log solo en desarrollo para debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[GameService] Using API URL:', apiUrl);
   }
 
-  // Lógica para el servidor (SSR)
-  if (process.env.NODE_ENV === 'production') {
-    console.log('[GameService] SSR in production. Using Render URL.');
-    return 'https://playlib-backend.onrender.com/api/juegos';
-  }
-
-  console.log('[GameService] SSR in development. Using localhost.');
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5100/api/juegos';
+  return apiUrl;
 };
 
 export interface Reseña {
